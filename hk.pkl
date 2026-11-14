@@ -1,0 +1,33 @@
+amends "package://github.com/jdx/hk/releases/download/v2.12.0/hk@2.12.0#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v2.12.0/hk@2.12.0#/Builtins.pkl"
+
+steps {
+    ["no-commit-to-branch"] = Builtins.no_commit_to_branch
+    ["check-merge-conflict"] = Builtins.check_merge_conflict
+    ["check-added-large-files"] = Builtins.check_added_large_files
+    ["detect-private-key"] = Builtins.detect_private_key
+    ["bun-fmt"] = new Step {
+        check = "bun fmt --check"
+        fix = "bun fmt"
+    }
+    ["bun-check"] = new Step {
+        check = "bun run check"
+    }
+}
+
+hooks {
+    ["pre-commit"] {
+        steps = (steps)
+    }
+
+    ["pre-push"] {
+        steps {
+            ["no-push-to-main"] = (Builtins.no_commit_to_branch) {
+                check = "hk util no-commit-to-branch --branch main --branch master"
+            }
+            ["bun-test"] = new Step {
+                check = "bun test"
+            }
+        }
+    }
+}

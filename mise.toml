@@ -1,4 +1,8 @@
 [tools]
+age = "1.3.2"
 bun = "1.4.4"
-fnox = "2.12.0"
-hk = "1.48.0"
+fnox = "1.48.0"
+hk = "2.12.0"
+
+[tasks.pre-commit]
+run = "hk run pre-commit"
