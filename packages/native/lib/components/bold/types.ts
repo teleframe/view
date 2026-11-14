@@ -1,0 +1,14 @@
+/**
+ * @fileoverview Type definitions for Bold component
+ * @module @telegram-markup/native/components/bold/types
+ */
+
+import type { BaseNativeTagWithTagNameProps } from '../../tags/base';
+
+/**
+ * Properties for `<Bold>` component.
+ */
+export interface NativeBoldProps extends BaseNativeTagWithTagNameProps {
+    /** Underlying HTML tag: 'b' (default) or 'strong' */
+    tagName?: 'b' | 'strong';
+}
