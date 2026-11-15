@@ -3,7 +3,7 @@
  * @module @teleframe/view/native/components/mono/types
  */
 
-import type { CodeChildren } from '@native/tags/base';
+import type { CodeChildren } from '../../tags/base';
 
 /**
  * Properties for `<Mono>` and `<Monospace>` components.

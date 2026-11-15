@@ -3,7 +3,7 @@
  * @module @teleframe/view/native/components/strike/strike
  */
 
-import type { NativeChildren, TelegramNativeElement } from '@native/tags/base';
+import type { NativeChildren, TelegramNativeElement } from '../../tags/base';
 import type { NativeStrikeProps } from './types';
 
 /**
@@ -20,11 +20,15 @@ export function Strike(propsOrChildren: NativeStrikeProps | NativeChildren): Tel
         ('children' in propsOrChildren || 'tagName' in propsOrChildren)
     ) {
         const { children, tagName = 's' } = propsOrChildren as NativeStrikeProps;
-        if (tagName === 'strike') return <strike>{children}</strike>;
-        if (tagName === 'del') return <del>{children}</del>;
-        return <s>{children}</s>;
+        return {
+            type: tagName === 'strike' ? 'strike' : tagName === 'del' ? 'del' : 's',
+            props: { children },
+        };
     }
-    return <s>{propsOrChildren as NativeChildren}</s>;
+    return {
+        type: 's',
+        props: { children: propsOrChildren as NativeChildren },
+    };
 }
 
 /**

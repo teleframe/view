@@ -3,7 +3,7 @@
  * @module @teleframe/view/native/components/spoiler/spoiler
  */
 
-import type { NativeChildren, TelegramNativeElement } from '@native/tags/base';
+import type { NativeChildren, TelegramNativeElement } from '../../tags/base';
 import type { NativeSpoilerProps } from './types';
 
 /**
@@ -22,10 +22,21 @@ export function Spoiler(
         ('children' in propsOrChildren || 'tagName' in propsOrChildren)
     ) {
         const { children, tagName = 'tg-spoiler' } = propsOrChildren as NativeSpoilerProps;
-        if (tagName === 'span') return <span class="tg-spoiler">{children}</span>;
-        return <tg-spoiler>{children}</tg-spoiler>;
+        if (tagName === 'span') {
+            return {
+                type: 'span',
+                props: { class: 'tg-spoiler', children },
+            };
+        }
+        return {
+            type: 'tg-spoiler',
+            props: { children },
+        };
     }
-    return <tg-spoiler>{propsOrChildren as NativeChildren}</tg-spoiler>;
+    return {
+        type: 'tg-spoiler',
+        props: { children: propsOrChildren as NativeChildren },
+    };
 }
 
 /**

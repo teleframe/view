@@ -3,8 +3,8 @@
  * @module @teleframe/view/native/components/divider/divider
  */
 
-import { normalizeInteger } from '@native/sanitizer';
-import type { TelegramNativeElement } from '@native/tags/base';
+import { normalizeInteger } from '../../sanitizer';
+import type { TelegramNativeElement } from '../../tags/base';
 import type { NativeDividerProps } from './types';
 
 /**
@@ -21,7 +21,10 @@ export function Divider(
         const c = propsOrChar ?? '—';
         const len = normalizeInteger(length, 20, 1, 4096);
         const line = c.repeat(len);
-        return <hr char={line} length={1} before={1} after={1} />;
+        return {
+            type: 'hr',
+            props: { char: line, length: 1, before: 1, after: 1 },
+        };
     }
     const {
         char = '—',
@@ -37,7 +40,10 @@ export function Divider(
     const a = normalizeInteger(after ?? spacing, 1, 0, 100);
     const line = `${prefix}${char.repeat(len)}${suffix}`;
 
-    return <hr char={line} length={1} before={b} after={a} />;
+    return {
+        type: 'hr',
+        props: { char: line, length: 1, before: b, after: a },
+    };
 }
 
 /**

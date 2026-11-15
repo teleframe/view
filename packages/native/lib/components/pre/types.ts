@@ -3,8 +3,8 @@
  * @module @teleframe/view/native/components/pre/types
  */
 
-import type { NativeChildren } from '@native/tags/base';
-import type { Language } from '@native/tags/languages';
+import type { NativeChildren } from '../../tags/base';
+import type { Language } from '../../tags/languages';
 
 /**
  * Properties for `<Pre>` preformatted block component.

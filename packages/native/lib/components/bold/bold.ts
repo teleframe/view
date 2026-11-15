@@ -3,7 +3,7 @@
  * @module @teleframe/view/native/components/bold/bold
  */
 
-import type { NativeChildren, TelegramNativeElement } from '@native/tags/base';
+import type { NativeChildren, TelegramNativeElement } from '../../tags/base';
 import type { NativeBoldProps } from './types';
 
 /**
@@ -20,12 +20,15 @@ export function Bold(propsOrChildren: NativeBoldProps | NativeChildren): Telegra
         ('children' in propsOrChildren || 'tagName' in propsOrChildren)
     ) {
         const { children, tagName = 'b' } = propsOrChildren as NativeBoldProps;
-        if (tagName === 'strong') {
-            return <strong>{children}</strong>;
-        }
-        return <b>{children}</b>;
+        return {
+            type: tagName === 'strong' ? 'strong' : 'b',
+            props: { children },
+        };
     }
-    return <b>{propsOrChildren as NativeChildren}</b>;
+    return {
+        type: 'b',
+        props: { children: propsOrChildren as NativeChildren },
+    };
 }
 
 /**

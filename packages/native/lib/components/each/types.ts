@@ -3,7 +3,7 @@
  * @module @teleframe/view/native/components/each/types
  */
 
-import type { NativeChildren } from '@native/tags/base';
+import type { NativeChildren } from '../../tags/base';
 import type { NumberStyle } from '../list/types';
 
 /**

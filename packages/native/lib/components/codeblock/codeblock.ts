@@ -3,7 +3,7 @@
  * @module @teleframe/view/native/components/codeblock/codeblock
  */
 
-import type { TelegramNativeElement } from '@native/tags/base';
+import type { TelegramNativeElement } from '../../tags/base';
 import type { NativeCodeblockProps } from './types';
 
 /**
@@ -16,11 +16,35 @@ export function CodeBlock(
     propsOrCode: NativeCodeblockProps | string,
     language?: string,
 ): TelegramNativeElement {
+    let code: any;
+    let lang: string | undefined;
     if (typeof propsOrCode === 'string') {
-        return <codeblock language={language}>{propsOrCode}</codeblock>;
+        code = propsOrCode;
+        lang = language;
+    } else {
+        code = propsOrCode?.children;
+        lang = propsOrCode?.language ?? language;
     }
-    const { children, language: lang } = propsOrCode ?? {};
-    return <codeblock language={lang}>{children}</codeblock>;
+
+    if (lang) {
+        return {
+            type: 'pre',
+            props: {
+                children: {
+                    type: 'code',
+                    props: {
+                        class: `language-${lang}`,
+                        children: code,
+                    },
+                },
+            },
+        };
+    }
+
+    return {
+        type: 'pre',
+        props: { children: code },
+    };
 }
 
 /**

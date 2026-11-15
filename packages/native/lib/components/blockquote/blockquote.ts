@@ -3,7 +3,7 @@
  * @module @teleframe/view/native/components/blockquote/blockquote
  */
 
-import type { NativeChildren, TelegramNativeElement } from '@native/tags/base';
+import type { NativeChildren, TelegramNativeElement } from '../../tags/base';
 import type { NativeBlockquoteProps } from './types';
 
 /**
@@ -22,9 +22,15 @@ export function Blockquote(
         ('children' in propsOrChildren || 'expandable' in propsOrChildren)
     ) {
         const { children, expandable } = propsOrChildren as NativeBlockquoteProps;
-        return <blockquote expandable={expandable}>{children}</blockquote>;
+        return {
+            type: 'blockquote',
+            props: { expandable, children },
+        };
     }
-    return <blockquote>{propsOrChildren as NativeChildren}</blockquote>;
+    return {
+        type: 'blockquote',
+        props: { children: propsOrChildren as NativeChildren },
+    };
 }
 
 /**

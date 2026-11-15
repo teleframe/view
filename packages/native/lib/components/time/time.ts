@@ -3,9 +3,9 @@
  * @module @teleframe/view/native/components/time/time
  */
 
-import type { TelegramNativeElement } from '@native/tags/base';
-import type { TimeFormat } from '@native/tags/time';
-import { normalizeTimeFormat, normalizeTimestamp } from '@native/tags/time';
+import type { TelegramNativeElement } from '../../tags/base';
+import type { TimeFormat } from '../../tags/time';
+import { normalizeTimeFormat, normalizeTimestamp } from '../../tags/time';
 import type { NativeTimeProps } from './types';
 
 /**
@@ -83,11 +83,14 @@ export function Time(
         }
     }
 
-    return (
-        <tg-time unix={timestamp} format={normalizedFormat}>
-            {resolvedFallback}
-        </tg-time>
-    );
+    return {
+        type: 'tg-time',
+        props: {
+            unix: timestamp,
+            format: normalizedFormat,
+            children: resolvedFallback,
+        },
+    };
 }
 
 /**

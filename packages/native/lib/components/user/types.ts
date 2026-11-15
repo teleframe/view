@@ -3,7 +3,7 @@
  * @module @teleframe/view/native/components/user/types
  */
 
-import type { NativeChildren } from '@native/tags/base';
+import type { NativeChildren } from '../../tags/base';
 
 /**
  * Properties for `<User>` mention component.

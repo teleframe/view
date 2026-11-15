@@ -3,7 +3,7 @@
  * @module @teleframe/view/native/components/raw-html/raw-html
  */
 
-import type { TelegramNativeElement } from '@native/tags/base';
+import type { TelegramNativeElement } from '../../tags/base';
 import type { NativeRawHtmlProps } from './types';
 
 export const RAW_HTML_TYPE = 'telegram:raw_html';

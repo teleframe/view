@@ -3,7 +3,7 @@
  * @module @teleframe/view/native/components/paragraph/paragraph
  */
 
-import type { NativeChildren, TelegramNativeElement } from '@native/tags/base';
+import type { NativeChildren, TelegramNativeElement } from '../../tags/base';
 import type { NativeParagraphProps } from './types';
 
 /**
@@ -30,15 +30,17 @@ export function Paragraph(
         const { children, spacing, lines, after, before, count } =
             propsOrChildren as NativeParagraphProps;
         const lineCount = after ?? spacing ?? lines ?? count ?? 2;
-        return (
-            <p count={lineCount} before={before}>
-                {children}
-            </p>
-        );
+        return {
+            type: 'p',
+            props: { count: lineCount, before, children },
+        };
     }
 
     const lineCount = spacingArg ?? 2;
-    return <p count={lineCount}>{propsOrChildren as NativeChildren}</p>;
+    return {
+        type: 'p',
+        props: { count: lineCount, children: propsOrChildren as NativeChildren },
+    };
 }
 
 /**

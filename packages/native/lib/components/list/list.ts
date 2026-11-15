@@ -3,8 +3,8 @@
  * @module @teleframe/view/native/components/list/list
  */
 
-import { normalizeInteger } from '@native/sanitizer';
-import type { TelegramNativeElement } from '@native/tags/base';
+import { normalizeInteger } from '../../sanitizer';
+import type { TelegramNativeElement } from '../../tags/base';
 import type { NativeLiProps, NativeListProps, NativeOlProps, NativeUlProps } from './types';
 import { BULLET_PRESETS, flattenChildren, formatNumberMarker } from './utils';
 
@@ -15,11 +15,10 @@ import { BULLET_PRESETS, flattenChildren, formatNumberMarker } from './utils';
  * @returns Virtual list item element
  */
 export const Li = ({ children, marker, indent }: NativeLiProps): TelegramNativeElement => {
-    return (
-        <li marker={marker} indent={indent}>
-            {children}
-        </li>
-    );
+    return {
+        type: 'li',
+        props: { marker, indent, children },
+    };
 };
 
 /**
@@ -117,7 +116,7 @@ export const List = ({
 export const Ul = ({ bullet = 'bullet', ...props }: NativeUlProps): TelegramNativeElement => {
     const marker = BULLET_PRESETS[bullet] ?? bullet;
 
-    return <List type={bullet === 'dash' ? 'dash' : 'bullet'} marker={marker} {...props} />;
+    return List({ type: bullet === 'dash' ? 'dash' : 'bullet', marker, ...props });
 };
 
 /**
@@ -128,7 +127,7 @@ export const Ol = ({
     numberStyle = 'dot',
     ...props
 }: NativeOlProps): TelegramNativeElement => {
-    return <List type="number" start={start} numberStyle={numberStyle} {...props} />;
+    return List({ type: 'number', start, numberStyle, ...props });
 };
 
 /**

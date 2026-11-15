@@ -3,8 +3,8 @@
  * @module @teleframe/view/native/components/pre/pre
  */
 
-import type { NativeChildren, TelegramNativeElement } from '@native/tags/base';
-import type { Language } from '@native/tags/languages';
+import type { NativeChildren, TelegramNativeElement } from '../../tags/base';
+import type { Language } from '../../tags/languages';
 import type { NativePreProps } from './types';
 
 /**
@@ -21,9 +21,29 @@ export function Pre(propsOrChildren: NativePreProps | NativeChildren): TelegramN
         ('children' in propsOrChildren || 'language' in propsOrChildren)
     ) {
         const { children, language } = propsOrChildren as NativePreProps;
-        return <pre language={language}>{children}</pre>;
+        if (language) {
+            return {
+                type: 'pre',
+                props: {
+                    children: {
+                        type: 'code',
+                        props: {
+                            class: `language-${language}`,
+                            children,
+                        },
+                    },
+                },
+            };
+        }
+        return {
+            type: 'pre',
+            props: { children },
+        };
     }
-    return <pre>{propsOrChildren as NativeChildren}</pre>;
+    return {
+        type: 'pre',
+        props: { children: propsOrChildren as NativeChildren },
+    };
 }
 
 /**

@@ -3,8 +3,8 @@
  * @module @teleframe/view/native/components/user/user
  */
 
-import { TelegramSecurityError } from '@native/sanitizer';
-import type { NativeChildren, TelegramNativeElement } from '@native/tags/base';
+import { TelegramSecurityError } from '../../sanitizer';
+import type { NativeChildren, TelegramNativeElement } from '../../tags/base';
 import type { NativeUserProps } from './types';
 
 /**
@@ -40,7 +40,13 @@ export function User(
         );
     }
 
-    return <a href={`tg://user?id=${numId}`}>{c}</a>;
+    return {
+        type: 'a',
+        props: {
+            href: `tg://user?id=${numId}`,
+            children: c,
+        },
+    };
 }
 
 /**

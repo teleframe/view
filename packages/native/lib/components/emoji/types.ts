@@ -3,7 +3,7 @@
  * @module @teleframe/view/native/components/emoji/types
  */
 
-import type { EmojiChildren } from '@native/tags/base';
+import type { EmojiChildren } from '../../tags/base';
 
 /**
  * Properties for `<Emoji>` custom emoji component.
