@@ -1,14 +1,21 @@
 {
     "$schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
     "name": "@teleframe/view",
-    "version": "0.1.0",
-    "unstable": ["sloppy-imports"],
+    "version": "0.2.0",
+    "unstable": [
+        "sloppy-imports"
+    ],
     "compilerOptions": {
         "jsx": "react-jsx",
         "jsxImportSource": "@teleframe/view"
     },
     "publish": {
-        "include": ["src", "packages/native/lib", "README.md", "LICENSE"]
+        "include": [
+            "src",
+            "packages/native/lib",
+            "README.md",
+            "LICENSE"
+        ]
     },
     "imports": {
         "@native": "./packages/native/lib/index.ts",
