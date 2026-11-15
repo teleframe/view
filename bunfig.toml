@@ -29,4 +29,12 @@ arrowParens = "always"
 endOfLine = "lf"
 
 # Ignored paths and build artifacts
-ignorePatterns = ["dist/**", "node_modules/**", ".git/**", "bun.lock", "data/**"]
+ignorePatterns = [
+    "dist/**",
+    "node_modules/**",
+    ".git/**",
+    "bun.lock",
+    "data/**",
+    "CHANGELOG.md",
+    "deno.json",
+]
