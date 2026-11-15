@@ -1,6 +1,6 @@
 /**
  * @fileoverview Telegram Bot API message and caption length limits validation
- * @module @telegram-markup/native/validation/limits
+ * @module @teleframe/view/native/validation/limits
  */
 
 export const TELEGRAM_LIMITS = {

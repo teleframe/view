@@ -1,10 +1,10 @@
 /**
  * @fileoverview Universal list components (List, Ul, Ol, Li) for Telegram messages
- * @module @telegram-markup/native/components/list/list
+ * @module @teleframe/view/native/components/list/list
  */
 
-import { normalizeInteger } from '../../sanitizer';
-import type { TelegramNativeElement } from '../../tags/base';
+import { normalizeInteger } from '@native/sanitizer';
+import type { TelegramNativeElement } from '@native/tags/base';
 import type { NativeLiProps, NativeListProps, NativeOlProps, NativeUlProps } from './types';
 import { BULLET_PRESETS, flattenChildren, formatNumberMarker } from './utils';
 

@@ -1,9 +1,9 @@
 /**
  * @fileoverview Type definitions for Spoiler component
- * @module @telegram-markup/native/components/spoiler/types
+ * @module @teleframe/view/native/components/spoiler/types
  */
 
-import type { BaseNativeTagWithTagNameProps } from '../../tags/base';
+import type { BaseNativeTagWithTagNameProps } from '@native/tags/base';
 
 /**
  * Properties for `<Spoiler>` component.

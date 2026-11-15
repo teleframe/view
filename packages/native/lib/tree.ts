@@ -1,6 +1,6 @@
 /**
  * @fileoverview Element tree expansion and one-time component resolution
- * @module @telegram-markup/native/tree
+ * @module @teleframe/view/native/tree
  */
 
 import { RAW_HTML_TYPE } from './components/raw-html/raw-html';

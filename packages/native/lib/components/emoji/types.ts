@@ -1,9 +1,9 @@
 /**
  * @fileoverview Type definitions for Telegram Custom Emoji component
- * @module @telegram-markup/native/components/emoji/types
+ * @module @teleframe/view/native/components/emoji/types
  */
 
-import type { EmojiChildren } from '../../tags/base';
+import type { EmojiChildren } from '@native/tags/base';
 
 /**
  * Properties for `<Emoji>` custom emoji component.

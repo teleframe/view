@@ -1,6 +1,6 @@
 /**
  * @fileoverview Type definitions for Line Break components
- * @module @telegram-markup/native/components/br/types
+ * @module @teleframe/view/native/components/br/types
  */
 
 /**

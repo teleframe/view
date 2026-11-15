@@ -1,9 +1,9 @@
 /**
  * @fileoverview Hyperlink and user mention component and function for Telegram messages
- * @module @telegram-markup/native/components/link/link
+ * @module @teleframe/view/native/components/link/link
  */
 
-import type { NativeChildren, TelegramNativeElement } from '../../tags/base';
+import type { NativeChildren, TelegramNativeElement } from '@native/tags/base';
 import type { NativeLinkProps } from './types';
 
 /**

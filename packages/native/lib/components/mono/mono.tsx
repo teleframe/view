@@ -1,9 +1,9 @@
 /**
  * @fileoverview Inline monospace formatting component and function for Telegram messages
- * @module @telegram-markup/native/components/mono/mono
+ * @module @teleframe/view/native/components/mono/mono
  */
 
-import type { CodeChildren, TelegramNativeElement } from '../../tags/base';
+import type { CodeChildren, TelegramNativeElement } from '@native/tags/base';
 import type { NativeMonoProps } from './types';
 
 /**

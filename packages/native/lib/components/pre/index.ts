@@ -1,6 +1,6 @@
 /**
  * @fileoverview Re-exports for Pre component module
- * @module @telegram-markup/native/components/pre
+ * @module @teleframe/view/native/components/pre
  */
 
 export * from './pre';

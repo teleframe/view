@@ -1,9 +1,9 @@
 /**
  * @fileoverview Type definitions for declarative conditional rendering `<Show>` component
- * @module @telegram-markup/native/components/show/types
+ * @module @teleframe/view/native/components/show/types
  */
 
-import type { NativeChildren } from '../../tags/base';
+import type { NativeChildren } from '@native/tags/base';
 
 /**
  * Properties for declarative conditional rendering component `<Show>`.

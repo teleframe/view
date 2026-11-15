@@ -1,6 +1,6 @@
 /**
  * @fileoverview Re-exports for Br component module
- * @module @telegram-markup/native/components/br
+ * @module @teleframe/view/native/components/br
  */
 
 export * from './br';

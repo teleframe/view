@@ -1,9 +1,9 @@
 /**
  * @fileoverview Italic formatting component and function for Telegram messages
- * @module @telegram-markup/native/components/italic/italic
+ * @module @teleframe/view/native/components/italic/italic
  */
 
-import type { NativeChildren, TelegramNativeElement } from '../../tags/base';
+import type { NativeChildren, TelegramNativeElement } from '@native/tags/base';
 import type { NativeItalicProps } from './types';
 
 /**

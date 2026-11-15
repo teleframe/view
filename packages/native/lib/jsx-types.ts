@@ -1,6 +1,6 @@
 /**
  * @fileoverview JSX namespace and intrinsic element declarations for Telegram Native JSX runtime
- * @module @telegram-markup/native/jsx-runtime/types
+ * @module @teleframe/view/native/jsx-runtime/types
  */
 
 import type {
@@ -30,7 +30,7 @@ import type {
     NativeUserLinkTagProps,
     NativeUTagProps,
     TelegramNativeElement,
-} from '../tags';
+} from './tags';
 
 export namespace JSX {
     /**

@@ -1,6 +1,6 @@
 /**
  * @fileoverview Glyphs and style presets for progress bars
- * @module @telegram-markup/native/components/progress/presets
+ * @module @teleframe/view/native/components/progress/presets
  */
 
 import type { ProgressStyle } from './types';

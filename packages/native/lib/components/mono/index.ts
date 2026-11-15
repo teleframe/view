@@ -1,6 +1,6 @@
 /**
  * @fileoverview Re-exports for Mono component module
- * @module @telegram-markup/native/components/mono
+ * @module @teleframe/view/native/components/mono
  */
 
 export * from './mono';

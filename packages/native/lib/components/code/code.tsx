@@ -1,10 +1,10 @@
 /**
  * @fileoverview Inline code formatting component and function for Telegram messages
- * @module @telegram-markup/native/components/code/code
+ * @module @teleframe/view/native/components/code/code
  */
 
-import type { CodeChildren, TelegramNativeElement } from '../../tags/base';
-import type { Language } from '../../tags/languages';
+import type { CodeChildren, TelegramNativeElement } from '@native/tags/base';
+import type { Language } from '@native/tags/languages';
 import type { NativeCodeProps } from './types';
 
 /**

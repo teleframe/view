@@ -1,9 +1,9 @@
 /**
  * @fileoverview Type definitions for Underline component
- * @module @telegram-markup/native/components/underline/types
+ * @module @teleframe/view/native/components/underline/types
  */
 
-import type { BaseNativeTagWithTagNameProps } from '../../tags/base';
+import type { BaseNativeTagWithTagNameProps } from '@native/tags/base';
 
 /**
  * Properties for `<Underline>` component.

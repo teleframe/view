@@ -1,9 +1,9 @@
 /**
  * @fileoverview High-DX Collection mapping component for Telegram messages
- * @module @telegram-markup/native/components/each/each
+ * @module @teleframe/view/native/components/each/each
  */
 
-import type { NativeChildren, TelegramNativeElement } from '../../tags/base';
+import type { NativeChildren, TelegramNativeElement } from '@native/tags/base';
 import { Br } from '../br';
 import { Li, Ol, Ul } from '../list';
 import type { NativeEachProps } from './types';

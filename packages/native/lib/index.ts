@@ -1,6 +1,6 @@
 /**
- * @fileoverview Main entry point for @telegram-markup/native package
- * @module @telegram-markup/native
+ * @fileoverview Main entry point for @teleframe/view/native package
+ * @module @teleframe/view/native
  */
 
 export * from './components';

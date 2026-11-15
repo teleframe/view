@@ -1,6 +1,6 @@
 /**
  * @fileoverview Number formatters, bullet presets, and flattening utilities for lists
- * @module @telegram-markup/native/components/list/utils
+ * @module @teleframe/view/native/components/list/utils
  */
 
 import type { NumberStyle } from './types';

@@ -1,11 +1,11 @@
 /**
  * @fileoverview Formatted Date & Time component `<Time>` for Telegram messages
- * @module @telegram-markup/native/components/time/time
+ * @module @teleframe/view/native/components/time/time
  */
 
-import type { TelegramNativeElement } from '../../tags/base';
-import type { TimeFormat } from '../../tags/time';
-import { normalizeTimeFormat, normalizeTimestamp } from '../../tags/time';
+import type { TelegramNativeElement } from '@native/tags/base';
+import type { TimeFormat } from '@native/tags/time';
+import { normalizeTimeFormat, normalizeTimestamp } from '@native/tags/time';
 import type { NativeTimeProps } from './types';
 
 /**

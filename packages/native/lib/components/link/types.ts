@@ -1,9 +1,9 @@
 /**
  * @fileoverview Type definitions for Link component
- * @module @telegram-markup/native/components/link/types
+ * @module @teleframe/view/native/components/link/types
  */
 
-import type { NativeChildren } from '../../tags/base';
+import type { NativeChildren } from '@native/tags/base';
 
 interface BaseLinkProps {
     children?: NativeChildren;

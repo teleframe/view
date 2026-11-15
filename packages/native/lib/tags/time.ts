@@ -1,6 +1,6 @@
 /**
  * @fileoverview Formatted Date & Time format aliases, validation, and normalization for Telegram `<tg-time>` tag
- * @module @telegram-markup/native/tags/time
+ * @module @teleframe/view/native/tags/time
  */
 
 /**

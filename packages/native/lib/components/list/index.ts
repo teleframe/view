@@ -1,6 +1,6 @@
 /**
  * @fileoverview Re-exports for List component module
- * @module @telegram-markup/native/components/list
+ * @module @teleframe/view/native/components/list
  */
 
 export * from './list';

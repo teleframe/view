@@ -1,6 +1,6 @@
 /**
  * @fileoverview Re-exports for Show component module
- * @module @telegram-markup/native/components/show
+ * @module @teleframe/view/native/components/show
  */
 
 export * from './show';

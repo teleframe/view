@@ -1,10 +1,10 @@
 /**
  * @fileoverview Horizontal Divider and Rule components for Telegram messages
- * @module @telegram-markup/native/components/divider/divider
+ * @module @teleframe/view/native/components/divider/divider
  */
 
-import { normalizeInteger } from '../../sanitizer';
-import type { TelegramNativeElement } from '../../tags/base';
+import { normalizeInteger } from '@native/sanitizer';
+import type { TelegramNativeElement } from '@native/tags/base';
 import type { NativeDividerProps } from './types';
 
 /**

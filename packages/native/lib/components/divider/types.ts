@@ -1,6 +1,6 @@
 /**
  * @fileoverview Type definitions for Horizontal Divider and Rule components
- * @module @telegram-markup/native/components/divider/types
+ * @module @teleframe/view/native/components/divider/types
  */
 
 /**

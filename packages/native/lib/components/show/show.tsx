@@ -1,9 +1,9 @@
 /**
  * @fileoverview Declarative conditional rendering component for Telegram messages
- * @module @telegram-markup/native/components/show/show
+ * @module @teleframe/view/native/components/show/show
  */
 
-import type { NativeChildren, TelegramNativeElement } from '../../tags/base';
+import type { NativeChildren, TelegramNativeElement } from '@native/tags/base';
 import type { NativeShowProps } from './types';
 
 /**

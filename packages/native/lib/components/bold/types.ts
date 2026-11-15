@@ -1,9 +1,9 @@
 /**
  * @fileoverview Type definitions for Bold component
- * @module @telegram-markup/native/components/bold/types
+ * @module @teleframe/view/native/components/bold/types
  */
 
-import type { BaseNativeTagWithTagNameProps } from '../../tags/base';
+import type { BaseNativeTagWithTagNameProps } from '@native/tags/base';
 
 /**
  * Properties for `<Bold>` component.

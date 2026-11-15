@@ -1,6 +1,6 @@
 /**
  * @fileoverview Re-exports for Underline component module
- * @module @telegram-markup/native/components/underline
+ * @module @teleframe/view/native/components/underline
  */
 
 export * from './types';

@@ -1,6 +1,6 @@
 /**
  * @fileoverview Core foundational types for Telegram Native JSX Element Tree
- * @module @telegram-markup/native/tags/base
+ * @module @teleframe/view/native/tags/base
  */
 
 /**

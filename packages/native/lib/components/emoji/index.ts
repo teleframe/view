@@ -1,6 +1,6 @@
 /**
  * @fileoverview Re-exports for Emoji component module
- * @module @telegram-markup/native/components/emoji
+ * @module @teleframe/view/native/components/emoji
  */
 
 export * from './emoji';

@@ -1,9 +1,9 @@
 /**
  * @fileoverview Type definitions and options for Telegram Native Each collection iterator
- * @module @telegram-markup/native/components/each/types
+ * @module @teleframe/view/native/components/each/types
  */
 
-import type { NativeChildren } from '../../tags/base';
+import type { NativeChildren } from '@native/tags/base';
 import type { NumberStyle } from '../list/types';
 
 /**

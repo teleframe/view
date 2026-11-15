@@ -1,9 +1,9 @@
 /**
  * @fileoverview Multi-line code block component for Telegram messages
- * @module @telegram-markup/native/components/codeblock/codeblock
+ * @module @teleframe/view/native/components/codeblock/codeblock
  */
 
-import type { TelegramNativeElement } from '../../tags/base';
+import type { TelegramNativeElement } from '@native/tags/base';
 import type { NativeCodeblockProps } from './types';
 
 /**

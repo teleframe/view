@@ -1,6 +1,6 @@
 /**
  * @fileoverview Re-exports for Progress bar component module
- * @module @telegram-markup/native/components/progress
+ * @module @teleframe/view/native/components/progress
  */
 
 export * from './presets';

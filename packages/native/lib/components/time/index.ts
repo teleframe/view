@@ -1,6 +1,6 @@
 /**
  * @fileoverview Re-exports for Time component module
- * @module @telegram-markup/native/components/time
+ * @module @teleframe/view/native/components/time
  */
 
 export * from './time';

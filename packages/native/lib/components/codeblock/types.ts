@@ -1,10 +1,10 @@
 /**
  * @fileoverview Type definitions for CodeBlock component
- * @module @telegram-markup/native/components/codeblock/types
+ * @module @teleframe/view/native/components/codeblock/types
  */
 
-import type { NativeChildren } from '../../tags/base';
-import type { Language } from '../../tags/languages';
+import type { NativeChildren } from '@native/tags/base';
+import type { Language } from '@native/tags/languages';
 
 /**
  * Properties for `<CodeBlock>` and `<Codeblock>` multi-line code block components.

@@ -1,9 +1,9 @@
 /**
  * @fileoverview Line break components for Telegram messages
- * @module @telegram-markup/native/components/br/br
+ * @module @teleframe/view/native/components/br/br
  */
 
-import type { TelegramNativeElement } from '../../tags/base';
+import type { TelegramNativeElement } from '@native/tags/base';
 import type { NativeBrProps } from './types';
 
 /**

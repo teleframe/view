@@ -1,9 +1,9 @@
 /**
  * @fileoverview Bold formatting component and function for Telegram messages
- * @module @telegram-markup/native/components/bold/bold
+ * @module @teleframe/view/native/components/bold/bold
  */
 
-import type { NativeChildren, TelegramNativeElement } from '../../tags/base';
+import type { NativeChildren, TelegramNativeElement } from '@native/tags/base';
 import type { NativeBoldProps } from './types';
 
 /**

@@ -1,9 +1,9 @@
 /**
  * @fileoverview Type definitions and options for Telegram Native List components
- * @module @telegram-markup/native/components/list/types
+ * @module @teleframe/view/native/components/list/types
  */
 
-import type { BaseNativeTagProps } from '../../tags/base';
+import type { BaseNativeTagProps } from '@native/tags/base';
 
 /**
  * Supported list types: bullet points, ordered numbers, or dashes.

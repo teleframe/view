@@ -1,10 +1,10 @@
 /**
  * @fileoverview Custom emoji component and function for Telegram messages
- * @module @telegram-markup/native/components/emoji/emoji
+ * @module @teleframe/view/native/components/emoji/emoji
  */
 
-import { TelegramSecurityError } from '../../sanitizer';
-import type { EmojiChildren, TelegramNativeElement } from '../../tags/base';
+import { TelegramSecurityError } from '@native/sanitizer';
+import type { EmojiChildren, TelegramNativeElement } from '@native/tags/base';
 import type { NativeEmojiProps } from './types';
 
 /**

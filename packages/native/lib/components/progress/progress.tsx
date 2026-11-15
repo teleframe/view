@@ -1,10 +1,10 @@
 /**
  * @fileoverview Visual Progress Bar component for Telegram messages
- * @module @telegram-markup/native/components/progress/progress
+ * @module @teleframe/view/native/components/progress/progress
  */
 
-import { normalizeInteger } from '../../sanitizer';
-import type { TelegramNativeElement } from '../../tags/base';
+import { normalizeInteger } from '@native/sanitizer';
+import type { TelegramNativeElement } from '@native/tags/base';
 import { STYLE_PRESETS } from './presets';
 import type { ExtendedProgressProps } from './types';
 

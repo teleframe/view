@@ -1,6 +1,6 @@
 /**
  * @fileoverview Supported programming languages for syntax highlighting in Telegram code blocks
- * @module @telegram-markup/native/tags/languages
+ * @module @teleframe/view/native/tags/languages
  */
 
 /**

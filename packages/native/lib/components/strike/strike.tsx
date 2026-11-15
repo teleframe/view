@@ -1,9 +1,9 @@
 /**
  * @fileoverview Strikethrough formatting component and function for Telegram messages
- * @module @telegram-markup/native/components/strike/strike
+ * @module @teleframe/view/native/components/strike/strike
  */
 
-import type { NativeChildren, TelegramNativeElement } from '../../tags/base';
+import type { NativeChildren, TelegramNativeElement } from '@native/tags/base';
 import type { NativeStrikeProps } from './types';
 
 /**

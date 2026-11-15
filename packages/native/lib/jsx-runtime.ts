@@ -1,28 +1,37 @@
 /**
  * @fileoverview Strict Telegram Native HTML JSX Runtime
- * @module @telegram-markup/native/jsx-runtime
- *
- * Implements native Telegram Bot API HTML tags and transformations:
- * - Direct tags: b, strong, i, em, u, ins, s, strike, del, tg-spoiler, span.tg-spoiler, a, tg-emoji, tg-time, code, pre, blockquote
- * - Virtual <user id={...}> tag transformed into <a href="tg://user?id=...">
- * - Virtual <mono>...</mono> tag transformed into <code>...</code> for inline monospace
- * - <code language="..."> or <pre language="..."> transformed into <pre><code class="language-...">...</code></pre>
+ * @module @teleframe/view/native/jsx-runtime
  */
 
 import { TelegramSecurityError } from './sanitizer';
 import type { NativeChildren, TelegramNativeElement } from './tags/base';
 import { normalizeTimeFormat } from './tags/time';
 
-export * from './jsx-runtime/types';
+export * from './jsx-types';
 export * from './tags';
+
+const wrapLanguage = (
+    language: string,
+    children: any,
+    rest: any,
+    key?: any,
+): TelegramNativeElement => ({
+    type: 'pre',
+    props: {
+        ...rest,
+        children: {
+            type: 'code',
+            props: {
+                class: `language-${language}`,
+                children,
+            },
+        },
+    },
+    key,
+});
 
 /**
  * Creates and transforms a Telegram virtual native JSX element node.
- *
- * @param type - Tag name string or component function
- * @param props - Element properties and children
- * @param key - Optional element key
- * @returns Virtual Telegram native element
  */
 export const jsx = (type: any, props: any, key?: any): TelegramNativeElement => {
     // 1. Transform virtual <user id={...}> into Telegram user mention link <a href="tg://user?id=...">
@@ -39,22 +48,14 @@ export const jsx = (type: any, props: any, key?: any): TelegramNativeElement => 
         }
         return {
             type: 'a',
-            props: {
-                ...rest,
-                href: `tg://user?id=${numId}`,
-                children,
-            },
+            props: { ...rest, href: `tg://user?id=${numId}`, children },
             key,
         };
     }
 
     // 2. Transform virtual <mono>...</mono> into Telegram inline <code>...</code>
     if (type === 'mono') {
-        return {
-            type: 'code',
-            props,
-            key,
-        };
+        return { type: 'code', props, key };
     }
 
     // 3. Normalize format aliases on <tg-time unix="..." format="...">
@@ -62,106 +63,25 @@ export const jsx = (type: any, props: any, key?: any): TelegramNativeElement => 
         const { format, ...rest } = props;
         return {
             type: 'tg-time',
-            props: {
-                ...rest,
-                format: normalizeTimeFormat(format),
-            },
+            props: { ...rest, format: normalizeTimeFormat(format) },
             key,
         };
     }
 
     // 4. Transform virtual <codeblock language="..."> into Telegram code block
-    if (type === 'codeblock') {
+    if (type === 'codeblock' || type === 'code' || type === 'pre') {
         const { language, children, ...rest } = props ?? {};
         if (language) {
-            return {
-                type: 'pre',
-                props: {
-                    ...rest,
-                    children: {
-                        type: 'code',
-                        props: {
-                            class: `language-${language}`,
-                            children,
-                        },
-                    },
-                },
-                key,
-            };
+            return wrapLanguage(language, children, rest, key);
         }
         return {
-            type: 'pre',
-            props: {
-                ...rest,
-                children,
-            },
+            type: type === 'codeblock' ? 'pre' : type,
+            props: { ...rest, children },
             key,
         };
     }
 
-    // 5. Transform <code language="..."> into <pre><code class="language-...">
-    if (type === 'code') {
-        const { language, children, ...rest } = props ?? {};
-        if (language) {
-            return {
-                type: 'pre',
-                props: {
-                    children: {
-                        type: 'code',
-                        props: {
-                            ...rest,
-                            class: `language-${language}`,
-                            children,
-                        },
-                    },
-                },
-                key,
-            };
-        }
-        return {
-            type: 'code',
-            props: {
-                ...rest,
-                children,
-            },
-            key,
-        };
-    }
-
-    // 6. Transform <pre language="..."> into <pre><code class="language-...">
-    if (type === 'pre') {
-        const { language, children, ...rest } = props ?? {};
-        if (language) {
-            return {
-                type: 'pre',
-                props: {
-                    ...rest,
-                    children: {
-                        type: 'code',
-                        props: {
-                            class: `language-${language}`,
-                            children,
-                        },
-                    },
-                },
-                key,
-            };
-        }
-        return {
-            type: 'pre',
-            props: {
-                ...rest,
-                children,
-            },
-            key,
-        };
-    }
-
-    return {
-        type,
-        props,
-        key,
-    };
+    return { type, props, key };
 };
 
 /**

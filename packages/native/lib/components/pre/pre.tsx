@@ -1,10 +1,10 @@
 /**
  * @fileoverview Preformatted code block component and function for Telegram messages
- * @module @telegram-markup/native/components/pre/pre
+ * @module @teleframe/view/native/components/pre/pre
  */
 
-import type { NativeChildren, TelegramNativeElement } from '../../tags/base';
-import type { Language } from '../../tags/languages';
+import type { NativeChildren, TelegramNativeElement } from '@native/tags/base';
+import type { Language } from '@native/tags/languages';
 import type { NativePreProps } from './types';
 
 /**

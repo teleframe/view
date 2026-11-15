@@ -1,9 +1,9 @@
 /**
  * @fileoverview Type definitions for Blockquote component
- * @module @telegram-markup/native/components/blockquote/types
+ * @module @teleframe/view/native/components/blockquote/types
  */
 
-import type { NativeChildren } from '../../tags/base';
+import type { NativeChildren } from '@native/tags/base';
 
 /**
  * Properties for `<Blockquote>` quotation component.

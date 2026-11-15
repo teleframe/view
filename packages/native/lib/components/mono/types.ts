@@ -1,9 +1,9 @@
 /**
  * @fileoverview Type definitions for Monospace component
- * @module @telegram-markup/native/components/mono/types
+ * @module @teleframe/view/native/components/mono/types
  */
 
-import type { CodeChildren } from '../../tags/base';
+import type { CodeChildren } from '@native/tags/base';
 
 /**
  * Properties for `<Mono>` and `<Monospace>` components.

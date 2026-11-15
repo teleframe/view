@@ -1,9 +1,9 @@
 /**
  * @fileoverview Spoiler formatting component and function for Telegram messages
- * @module @telegram-markup/native/components/spoiler/spoiler
+ * @module @teleframe/view/native/components/spoiler/spoiler
  */
 
-import type { NativeChildren, TelegramNativeElement } from '../../tags/base';
+import type { NativeChildren, TelegramNativeElement } from '@native/tags/base';
 import type { NativeSpoilerProps } from './types';
 
 /**

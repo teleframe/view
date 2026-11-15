@@ -1,6 +1,6 @@
 /**
  * @fileoverview Type definitions and styles for Telegram Native ProgressBar
- * @module @telegram-markup/native/components/progress/types
+ * @module @teleframe/view/native/components/progress/types
  */
 
 /**

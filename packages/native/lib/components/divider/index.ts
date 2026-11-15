@@ -1,6 +1,6 @@
 /**
  * @fileoverview Re-exports for Divider component module
- * @module @telegram-markup/native/components/divider
+ * @module @teleframe/view/native/components/divider
  */
 
 export * from './divider';

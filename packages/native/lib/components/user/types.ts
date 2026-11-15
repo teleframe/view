@@ -1,9 +1,9 @@
 /**
  * @fileoverview Type definitions for User mention component
- * @module @telegram-markup/native/components/user/types
+ * @module @teleframe/view/native/components/user/types
  */
 
-import type { NativeChildren } from '../../tags/base';
+import type { NativeChildren } from '@native/tags/base';
 
 /**
  * Properties for `<User>` mention component.

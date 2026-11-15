@@ -1,10 +1,10 @@
 /**
  * @fileoverview User mention component and function for Telegram messages
- * @module @telegram-markup/native/components/user/user
+ * @module @teleframe/view/native/components/user/user
  */
 
-import { TelegramSecurityError } from '../../sanitizer';
-import type { NativeChildren, TelegramNativeElement } from '../../tags/base';
+import { TelegramSecurityError } from '@native/sanitizer';
+import type { NativeChildren, TelegramNativeElement } from '@native/tags/base';
 import type { NativeUserProps } from './types';
 
 /**

@@ -1,9 +1,9 @@
 /**
  * @fileoverview Paragraph component for semantic and visual block separation in Telegram messages
- * @module @telegram-markup/native/components/paragraph/paragraph
+ * @module @teleframe/view/native/components/paragraph/paragraph
  */
 
-import type { NativeChildren, TelegramNativeElement } from '../../tags/base';
+import type { NativeChildren, TelegramNativeElement } from '@native/tags/base';
 import type { NativeParagraphProps } from './types';
 
 /**

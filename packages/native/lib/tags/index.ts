@@ -1,6 +1,6 @@
 /**
  * @fileoverview Complete Telegram Native tag and component type definitions
- * @module @telegram-markup/native/tags
+ * @module @teleframe/view/native/tags
  */
 
 export * from './base';

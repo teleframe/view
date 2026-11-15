@@ -1,9 +1,9 @@
 /**
  * @fileoverview Type definitions for Italic component
- * @module @telegram-markup/native/components/italic/types
+ * @module @teleframe/view/native/components/italic/types
  */
 
-import type { BaseNativeTagWithTagNameProps } from '../../tags/base';
+import type { BaseNativeTagWithTagNameProps } from '@native/tags/base';
 
 /**
  * Properties for `<Italic>` component.

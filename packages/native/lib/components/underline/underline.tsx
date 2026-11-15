@@ -1,9 +1,9 @@
 /**
  * @fileoverview Underline formatting component and function for Telegram messages
- * @module @telegram-markup/native/components/underline/underline
+ * @module @teleframe/view/native/components/underline/underline
  */
 
-import type { NativeChildren, TelegramNativeElement } from '../../tags/base';
+import type { NativeChildren, TelegramNativeElement } from '@native/tags/base';
 import type { NativeUnderlineProps } from './types';
 
 /**

@@ -1,10 +1,10 @@
 /**
  * @fileoverview Type definitions for Code component
- * @module @telegram-markup/native/components/code/types
+ * @module @teleframe/view/native/components/code/types
  */
 
-import type { CodeChildren } from '../../tags/base';
-import type { Language } from '../../tags/languages';
+import type { CodeChildren } from '@native/tags/base';
+import type { Language } from '@native/tags/languages';
 
 /**
  * Properties for `<Code>` component.

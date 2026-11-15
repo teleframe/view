@@ -1,9 +1,9 @@
 /**
  * @fileoverview Blockquote formatting component and function for Telegram messages
- * @module @telegram-markup/native/components/blockquote/blockquote
+ * @module @teleframe/view/native/components/blockquote/blockquote
  */
 
-import type { NativeChildren, TelegramNativeElement } from '../../tags/base';
+import type { NativeChildren, TelegramNativeElement } from '@native/tags/base';
 import type { NativeBlockquoteProps } from './types';
 
 /**

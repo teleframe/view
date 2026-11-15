@@ -1,6 +1,6 @@
 /**
  * @fileoverview Types for explicit unsafe RawHtml escape hatch
- * @module @telegram-markup/native/components/raw-html/types
+ * @module @teleframe/view/native/components/raw-html/types
  */
 
 export interface NativeRawHtmlProps {

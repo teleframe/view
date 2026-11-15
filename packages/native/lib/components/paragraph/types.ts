@@ -1,9 +1,9 @@
 /**
  * @fileoverview Type definitions for Paragraph and P components
- * @module @telegram-markup/native/components/paragraph/types
+ * @module @teleframe/view/native/components/paragraph/types
  */
 
-import type { BaseNativeTagProps } from '../../tags/base';
+import type { BaseNativeTagProps } from '@native/tags/base';
 
 /**
  * Properties for `<Paragraph>` and `<P>` text block components.

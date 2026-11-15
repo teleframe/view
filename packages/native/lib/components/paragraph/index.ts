@@ -1,6 +1,6 @@
 /**
  * @fileoverview Re-exports for Paragraph component module
- * @module @telegram-markup/native/components/paragraph
+ * @module @teleframe/view/native/components/paragraph
  */
 
 export * from './paragraph';
