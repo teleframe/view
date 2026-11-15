@@ -34,3 +34,11 @@ jobs:
 
             - name: Build package
               run: bun run build
+
+            - name: Setup Node.js (for tarball install verification)
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+
+            - name: Verify release packaging and npm installation
+              run: bun run verify:release

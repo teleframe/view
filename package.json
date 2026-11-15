@@ -64,7 +64,9 @@
         "env:prod": "bun scripts/fnox.ts prod",
         "fnox": "bun scripts/fnox.ts",
         "example": "fnox exec -- bun --watch example/src/index.ts",
-        "example:native": "fnox exec -- bun --watch example/src/index.ts"
+        "example:native": "fnox exec -- bun --watch example/src/index.ts",
+        "smoke:test": "fnox exec -- bun example/src/smoke-test.tsx",
+        "verify:release": "bun scripts/verify-release.ts"
     },
     "repository": {
         "type": "git",
