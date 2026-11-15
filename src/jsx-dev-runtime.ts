@@ -3,4 +3,4 @@
  * @module @teleframe/view/jsx-dev-runtime
  */
 
-export * from '@native/jsx-dev-runtime';
+export * from '@view/native/jsx-dev-runtime';
