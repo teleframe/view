@@ -1,10 +1,10 @@
 /**
- * @fileoverview Root entrypoint for telegram-markup
+ * @fileoverview Root entrypoint for @teleframe/view
  * Re-exports the native Telegram Bot API formatting engine.
- * @module telegram-markup
+ * @module @teleframe/view
  */
 
-import * as native from '../packages/native/lib/index';
+import * as native from '@native';
 
 /**
  * Namespaced export for Native Bot API formatting engine.
@@ -12,7 +12,7 @@ import * as native from '../packages/native/lib/index';
  *
  * @example
  * ```tsx
- * import { Native } from 'telegram-markup';
+ * import { Native } from '@teleframe/view';
  *
  * const screen = <Native.Bold>Hello</Native.Bold>;
  * const { text, entities } = Native.render(screen);
@@ -21,4 +21,4 @@ import * as native from '../packages/native/lib/index';
 export { native, native as Native };
 
 // Direct flat re-exports for convenience and quick start
-export * from '../packages/native/lib/index';
+export * from '@native';
