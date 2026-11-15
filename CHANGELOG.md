@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [0.2.1](https://github.com/teleframe/view/compare/v0.2.0...v0.2.1) (2026-11-15)
+
+### 🐛 Bug Fixes
+
+* **ci:** ignore auto-generated CHANGELOG.md and deno.json in bunfig formatter
+* **release:** bump patch version to resolve registry staged packument conflict
+
 ## [0.2.0](https://github.com/teleframe/view/compare/v0.1.0...v0.2.0) (2026-11-15)
 
 
