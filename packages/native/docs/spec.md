@@ -1,8 +1,8 @@
-# Public API Specification: @telegram-markup/native
+# Public API Specification: @teleframe/view/native
 
 ## 1. Core API Contract
 
-`@telegram-markup/native` provides two rendering pipelines:
+`@teleframe/view/native` provides two rendering pipelines:
 
 1. **`render(tree, options?)`**: Resolves and validates the JSX tree, then compiles it into Telegram Bot API `{ text, entities }` without an HTML round trip.
 2. **`renderToString(tree, options?)` / `renderHTML(tree)`**: Resolves and validates the JSX tree, then serializes supported tags and escaped text for `parse_mode: 'HTML'`. `RawHtml` is emitted as-is and is not sanitized.
@@ -48,7 +48,7 @@ Sending messages in grammY without `parse_mode` overhead:
 
 ```typescript
 import { Bot } from 'grammy';
-import { Bold, Italic, render } from '@telegram-markup/native';
+import { Bold, Italic, render } from '@teleframe/view/native';
 
 const bot = new Bot(process.env.BOT_TOKEN!);
 

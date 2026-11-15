@@ -3,7 +3,7 @@
  * @module examples/native/src/pages/widgets
  */
 
-import { Bold, Br, Divider, Italic, ProgressBar, Show, render } from '@telegram-markup/native';
+import { Bold, Br, Divider, Italic, ProgressBar, Show, render } from '@teleframe/view/native';
 
 /**
  * Progress widgets demonstration component.

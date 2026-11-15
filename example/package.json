@@ -1,5 +1,5 @@
 {
-    "name": "telegram-markup-example",
+    "name": "@teleframe/view-example",
     "version": "0.1.0",
     "module": "src/index.ts",
     "type": "module",
@@ -15,8 +15,7 @@
         "typescript": "catalog:"
     },
     "dependencies": {
-        "@telegram-markup/native": "workspace:*",
-        "telegram-markup": "workspace:*",
+        "@teleframe/view": "workspace:*",
         "grammy": "catalog:examples"
     }
 }

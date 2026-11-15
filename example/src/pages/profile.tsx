@@ -19,7 +19,7 @@ import {
     Time,
     Ul,
     renderToString,
-} from '@telegram-markup/native';
+} from '@teleframe/view/native';
 import type { ProfilePageProps } from './types';
 
 /**

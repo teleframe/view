@@ -21,7 +21,7 @@ import {
     User,
     render,
     renderToString,
-} from '@telegram-markup/native';
+} from '@teleframe/view/native';
 
 /**
  * Demonstrates the primary `render()` pipeline compiling JSX directly into

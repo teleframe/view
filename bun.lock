@@ -5,24 +5,23 @@
     "": {
       "name": "tg-murkup",
       "devDependencies": {
-        "@types/bun": "catalog:",
-        "@types/react": "catalog:",
-        "typescript": "catalog:",
+        "@types/bun": "latest",
+        "@types/react": "^19.3.0",
+        "typescript": "^6.0.3",
       },
       "peerDependencies": {
-        "typescript": "catalog:",
+        "typescript": ">=5.0.0",
       },
       "optionalPeers": [
         "typescript",
       ],
     },
     "example": {
-      "name": "telegram-markup-example",
+      "name": "@teleframe/view-example",
       "version": "0.1.0",
       "dependencies": {
-        "@telegram-markup/native": "workspace:*",
+        "@teleframe/view": "workspace:*",
         "grammy": "catalog:examples",
-        "telegram-markup": "workspace:*",
       },
       "devDependencies": {
         "@types/bun": "catalog:",
@@ -31,15 +30,15 @@
       },
     },
     "packages/native": {
-      "name": "@telegram-markup/native",
+      "name": "@teleframe/view",
       "version": "0.1.0",
       "devDependencies": {
-        "@types/bun": "catalog:",
-        "@types/react": "catalog:",
-        "typescript": "catalog:",
+        "@types/bun": "latest",
+        "@types/react": "^19.3.0",
+        "typescript": "^6.0.3",
       },
       "peerDependencies": {
-        "typescript": "catalog:",
+        "typescript": ">=5.0.0",
       },
       "optionalPeers": [
         "typescript",
@@ -59,7 +58,9 @@
   "packages": {
     "@grammyjs/types": ["@grammyjs/types@5.0.0", "", {}, "sha512-iq1Qrq1iPKkB8yAa0qSuIURMZOCuqTY5pWy5gHpCeL1oQ+GPadGhw/cDTVE8waJwuCzacUzuIjRv1sESvk7u7A=="],
 
-    "@telegram-markup/native": ["@telegram-markup/native@workspace:packages/native"],
+    "@teleframe/view": ["@teleframe/view@workspace:packages/native"],
+
+    "@teleframe/view-example": ["@teleframe/view-example@workspace:example"],
 
     "@types/bun": ["@types/bun@1.4.4", "", { "dependencies": { "bun-types": "1.4.4" } }, "sha512-9wkRDXUXK124pEnAutE6n/l18j+i9GC5IAHK8TmX/2nlySETmky0OU6yL5U8pW1AoKh++AN9auDCr647BfurjQ=="],
 
@@ -82,10 +83,6 @@
     "ms": ["ms@2.1.3", "", {}, "sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA=="],
 
     "node-fetch": ["node-fetch@2.7.0", "", { "dependencies": { "whatwg-url": "^5.0.0" }, "peerDependencies": { "encoding": "^0.1.0" }, "optionalPeers": ["encoding"] }, "sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A=="],
-
-    "telegram-markup": ["tg-murkup@root:", {}],
-
-    "telegram-markup-example": ["telegram-markup-example@workspace:example"],
 
     "tr46": ["tr46@0.0.3", "", {}, "sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw=="],
 

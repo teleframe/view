@@ -1,36 +1,37 @@
-# Telegram Markup
+# Teleframe View
 
-[![npm version](https://img.shields.io/npm/v/telegram-markup.svg)](https://www.npmjs.com/package/telegram-markup)
+[![npm version](https://img.shields.io/npm/v/@teleframe/view.svg)](https://www.npmjs.com/package/@teleframe/view)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Bun](https://img.shields.io/badge/Bun-1.4+-black.svg)](https://bun.sh)
-[![Tests](https://img.shields.io/badge/Tests-Passing-brightgreen.svg)](https://github.com/naylour/telegram-markup)
+[![Tests](https://img.shields.io/badge/Tests-Passing-brightgreen.svg)](https://github.com/teleframe/view)
 
 > **"A Message is a Page"**  
 > Declarative JSX/TSX markup and message rendering engine for Telegram bots.
 
 ---
 
-## Architecture & Packages
+## Architecture & Modules
 
-`telegram-markup` is a modular, unified ecosystem for Telegram bot formatting:
+`@teleframe/view` is a single, unified package distributed on npm and JSR, composed of focused modules:
 
-| Subpackage      | Import Path                                   | Status                  | Description                                             |
+| Module          | Import Path                                   | Status                  | Description                                             |
 | :-------------- | :-------------------------------------------- | :---------------------- | :------------------------------------------------------ |
-| **`native`**    | `telegram-markup` or `telegram-markup/native` | **✅ Production Ready** | Native Bot API `MessageEntity` & HTML formatting engine |
-| **`richtext`**  | `telegram-markup/richtext`                    | ⏳ _In Development_     | Multi-block structured rich messages and cards          |
-| **`widgets`**   | `telegram-markup/widgets`                     | ⏳ _Planned_            | Interactive inline pagination, calendars, keyboards     |
-| **`telegraph`** | `telegram-markup/telegraph`                   | ⏳ _Planned_            | Declarative Telegraph article builder and publisher     |
+| **`native`**    | `@teleframe/view` or `@teleframe/view/native` | **✅ Production Ready** | Native Bot API `MessageEntity` & HTML formatting engine |
+| **`richtext`**  | `@teleframe/view/richtext`                    | ⏳ _Planned_            | Multi-block structured rich messages and cards          |
+| **`widgets`**   | `@teleframe/view/widgets`                     | ⏳ _Planned_            | Interactive inline pagination, calendars, keyboards     |
+| **`telegraph`** | `@teleframe/view/telegraph`                   | ⏳ _Planned_            | Declarative Telegraph article builder and publisher     |
+| **`grammy`**    | `@teleframe/view` (Plugin)                    | ⏳ _Planned_            | Native grammY plugin for automated context rendering    |
 
 > [!NOTE]
-> **Currently Available:**
-> At present, the core **`native`** engine is fully available and production-ready. All native components, JSX elements, and lowercase functions can be imported in any of these ways:
+> All modules listed above are distributed together within the **`@teleframe/view`** package.
 >
-> - **Directly from root:** `import { Bold, link, render } from 'telegram-markup'`
-> - **From the native subpath:** `import { Bold, link, render } from 'telegram-markup/native'`
-> - **Via collision-free namespace:** `import { Native } from 'telegram-markup'` (e.g. `<Native.Bold>`, `Native.render()`)
-> - **Via standalone scoped package:** `npm install @telegram-markup/native`
+> At present, the core **`native`** module is fully available and production-ready. All native components, JSX elements, and lowercase functions can be imported in any of these ways:
 >
-> 📖 **For exhaustive details on all components, props, nesting constraints, and security guarantees, see the dedicated [Native Package Documentation (`packages/native/README.md`)](./packages/native/README.md)**.
+> - **Directly from root:** `import { Bold, link, render } from '@teleframe/view'`
+> - **From the native subpath:** `import { Bold, link, render } from '@teleframe/view/native'`
+> - **Via collision-free namespace:** `import { Native } from '@teleframe/view'` (e.g. `<Native.Bold>`, `Native.render()`)
+>
+> 📖 **For exhaustive details on all components, props, nesting constraints, and security guarantees, see the dedicated [Native Module Documentation](https://github.com/teleframe/view/blob/main/packages/native/README.md)**.
 
 ---
 
@@ -54,25 +55,26 @@ The `native` engine powers low-level Telegram Bot API message formatting with bu
 
 ```bash
 # Using Bun (Recommended)
-bun add telegram-markup
+bun add @teleframe/view
 
 # Using npm
-npm install telegram-markup
+npm install @teleframe/view
 
 # Using pnpm
-pnpm add telegram-markup
+pnpm add @teleframe/view
+
+# Using Deno
+deno add npm:@teleframe/view
 
 # Using Yarn
-yarn add telegram-markup
+yarn add @teleframe/view
 ```
-
-_(You can also install the scoped standalone package `@telegram-markup/native` directly)._
 
 ---
 
 ### 2. Choose Your Integration Path
 
-`telegram-markup` offers 4 flexible integration styles designed to fit any architecture—from standalone bots to complex monorepos and zero-JSX scripts.
+`@teleframe/view` offers 4 flexible integration styles designed to fit any architecture—from standalone bots to complex monorepos and zero-JSX scripts.
 
 #### 🚀 Path 1: Dedicated Telegram Bot (Recommended for Bot Projects)
 
@@ -85,7 +87,7 @@ For projects whose primary purpose is a Telegram bot. Configure `tsconfig.json` 
         "module": "ESNext",
         "moduleResolution": "bundler",
         "jsx": "react-jsx",
-        "jsxImportSource": "telegram-markup",
+        "jsxImportSource": "@teleframe/view",
         "strict": true
     }
 }
@@ -94,7 +96,7 @@ For projects whose primary purpose is a Telegram bot. Configure `tsconfig.json` 
 Usage in `.tsx` files:
 
 ```tsx
-import { Bold, Italic, Link, render } from 'telegram-markup';
+import { Bold, Italic, Link, render } from '@teleframe/view';
 
 const { text, entities } = render(
     <Bold>
@@ -113,7 +115,7 @@ If you have a monorepo containing a web frontend (React, Next.js) and a Telegram
     "extends": "../../tsconfig.json",
     "compilerOptions": {
         "jsx": "react-jsx",
-        "jsxImportSource": "telegram-markup"
+        "jsxImportSource": "@teleframe/view"
     },
     "include": ["src/**/*"]
 }
@@ -126,20 +128,20 @@ This isolates the Telegram markup JSX runtime exclusively to your bot directory,
 If bot message templates live directly inside an existing React application and you cannot alter `tsconfig.json`, simply add a single pragma line at the top of your bot template files:
 
 ```tsx
-/** @jsxImportSource telegram-markup */
-import { Bold, Italic, render } from 'telegram-markup';
+/** @jsxImportSource @teleframe/view */
+import { Bold, Italic, render } from '@teleframe/view';
 
 export function makeNotification(username: string) {
     return render(<Bold>Welcome, {username}!</Bold>);
 }
 ```
 
-Only files with this pragma use Telegram Markup's JSX runtime; all other files continue using React.
+Only files with this pragma use Teleframe View's JSX runtime; all other files continue using React.
 
 #### ⚡ Path 4: Zero-JSX Functional Builder API (Vanilla TS/JS, Zero Configuration)
 
 Don't want to configure `tsconfig.json`, configure JSX transforms, or use `.tsx` files?
-Every component in `telegram-markup` can be called directly as a function in vanilla `.ts` or `.js` files using intuitive lowercase helpers (`bold`, `italic`, `link`, `user`, `emoji`, `time`, `br`, `divider`, `paragraph`, `codeblock`, `ul`, `ol`, `li`, `show`, `each`, `progress`, etc.) or uppercase constructors (`Bold('text')`, `Italic('text')`):
+Every component in `@teleframe/view` can be called directly as a function in vanilla `.ts` or `.js` files using intuitive lowercase helpers (`bold`, `italic`, `link`, `user`, `emoji`, `time`, `br`, `divider`, `paragraph`, `codeblock`, `ul`, `ol`, `li`, `show`, `each`, `progress`, etc.) or uppercase constructors (`Bold('text')`, `Italic('text')`):
 
 ```ts
 import {
@@ -154,7 +156,7 @@ import {
     li,
     renderHtml,
     render,
-} from 'telegram-markup';
+} from '@teleframe/view';
 
 // Pure functional composition with zero JSX compilation needed!
 const message = [
@@ -175,12 +177,47 @@ const html = renderHtml(message);
 const { text, entities } = render(message);
 ```
 
+#### 🦕 Path 5: Deno Projects (`deno.json`)
+
+`@teleframe/view` has **zero external runtime dependencies** and works out of the box in **Deno 2+**.
+
+Configure your `deno.json`:
+
+```json
+{
+    "compilerOptions": {
+        "jsx": "react-jsx",
+        "jsxImportSource": "@teleframe/view"
+    }
+}
+```
+
+Usage in `.tsx` files (e.g. with [grammY](https://grammy.dev)):
+
+```tsx
+import { Bot } from 'npm:grammy';
+import { Bold, Italic, render } from '@teleframe/view';
+
+const bot = new Bot(Deno.env.get('TELEGRAM_BOT_TOKEN')!);
+
+bot.command('start', async (ctx) => {
+    const { text, entities } = render(
+        <Bold>
+            Hello from <Italic>Deno!</Italic>
+        </Bold>,
+    );
+    await ctx.reply(text, { entities });
+});
+
+bot.start();
+```
+
 #### 🛡️ Collision-Free Namespaced Imports
 
 When mixing multiple markup paradigms or future subpackages (`native`, `richtext`, `widget`), import via the `Native` / `native` namespace:
 
 ```tsx
-import { Native } from 'telegram-markup';
+import { Native } from '@teleframe/view';
 
 const screen = (
     <Native.Bold>
@@ -212,7 +249,7 @@ import {
     Ul,
     render,
     renderToString,
-} from 'telegram-markup';
+} from '@teleframe/view';
 
 const bot = new Bot(process.env.BOT_TOKEN!);
 
@@ -376,17 +413,17 @@ bun run example
 
 ## Documentation & Links
 
-- 📖 **[API Specification](./packages/native/docs/spec.md)** — Exhaustive specification of the compiler contract, limits, and runtime guarantees.
-- 🏗️ **[Architecture & Runtime](./packages/native/docs/architecture.md)** — Detailed overview of the JSX runtime, UTF-16 compiler, and sanitizer pipeline.
-- 🧩 **[Components Catalog](./packages/native/docs/components.md)** — In-depth guide to all native formatting components.
-- 🕒 **[Date/Time & Lists Guide](./packages/native/docs/time-and-lists.md)** — Bot API 9.0 `<Time>` and advanced list formatting.
-- 📊 **[Progress Bars Guide](./packages/native/docs/progress.md)** — Visual presets and styling options.
-- 🤖 **[Interactive Example Bot](./example)** — Interactive showcase with 12 complete screen examples.
-- 📜 **[The Telegram Markup Manifesto: "A Message is a Page"](./PHILOSOPHY.md)** (English) | **[Философия на русском](./PHILOSOPHY.ru.md)**
+- 📖 **[API Specification](https://github.com/teleframe/view/blob/main/packages/native/docs/spec.md)** — Exhaustive specification of the compiler contract, limits, and runtime guarantees.
+- 🏗️ **[Architecture & Runtime](https://github.com/teleframe/view/blob/main/packages/native/docs/architecture.md)** — Detailed overview of the JSX runtime, UTF-16 compiler, and sanitizer pipeline.
+- 🧩 **[Components Catalog](https://github.com/teleframe/view/blob/main/packages/native/docs/components.md)** — In-depth guide to all native formatting components.
+- 🕒 **[Date/Time & Lists Guide](https://github.com/teleframe/view/blob/main/packages/native/docs/time-and-lists.md)** — Bot API 9.0 `<Time>` and advanced list formatting.
+- 📊 **[Progress Bars Guide](https://github.com/teleframe/view/blob/main/packages/native/docs/progress.md)** — Visual presets and styling options.
+- 🤖 **[Interactive Example Bot](https://github.com/teleframe/view/tree/main/example)** — Interactive showcase with 12 complete screen examples.
+- 📜 **[The Teleframe View Manifesto: "A Message is a Page"](https://github.com/teleframe/view/blob/main/PHILOSOPHY.md)** (English) | **[Философия на русском](https://github.com/teleframe/view/blob/main/PHILOSOPHY.ru.md)**
 
 ---
 
 ## Author & License
 
 Created by **[Naylour](https://github.com/naylour)** (Telegram: [@naylour](https://t.me/naylour)).  
-Licensed under the [MIT License](./LICENSE).
+Licensed under the [MIT License](https://github.com/teleframe/view/blob/main/LICENSE).

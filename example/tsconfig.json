@@ -7,14 +7,20 @@
         "module": "ESNext",
         "moduleResolution": "bundler",
         "jsx": "react-jsx",
-        "jsxImportSource": "@telegram-markup/native",
+        "jsxImportSource": "@teleframe/view",
         "types": ["bun"],
         "allowJs": true,
 
-        // Monorepo direct source mapping to packages/native
+        // Direct source mapping to @teleframe/view and workspace modules
         "paths": {
-            "@telegram-markup/native": ["../../packages/native/lib/index.tsx"],
-            "@telegram-markup/native/*": ["../../packages/native/lib/*"]
+            "@native": ["../packages/native/lib/index.ts"],
+            "@native/*": ["../packages/native/lib/*"],
+            "@teleframe/view": ["../src/index.ts"],
+            "@teleframe/view/native": ["../packages/native/lib/index.ts"],
+            "@teleframe/view/jsx-runtime": ["../src/jsx-runtime.ts"],
+            "@teleframe/view/jsx-dev-runtime": ["../src/jsx-dev-runtime.ts"],
+            "@teleframe/view/native/jsx-runtime": ["../packages/native/lib/jsx-runtime.ts"],
+            "@teleframe/view/native/jsx-dev-runtime": ["../packages/native/lib/jsx-dev-runtime.ts"]
         },
 
         // Type checking & best practices

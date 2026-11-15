@@ -15,7 +15,7 @@ import {
     Paragraph,
     Time,
     renderToString,
-} from '@telegram-markup/native';
+} from '@teleframe/view/native';
 
 /**
  * Demonstrates Telegram Bot API 9.0 `<tg-time>` support, time aliases,

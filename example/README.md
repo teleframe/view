@@ -1,8 +1,8 @@
 # Telegram Markup Example Bot
 
-> Interactive demonstration bot built with [grammY](https://grammy.dev), [Bun](https://bun.sh), and [`@telegram-markup/native`](../packages/native).
+> Interactive demonstration bot built with [grammY](https://grammy.dev), [Bun](https://bun.sh), and [`@teleframe/view/native`](../packages/native).
 
-This bot demonstrates the full spectrum of `@telegram-markup/native` capabilities: declarative JSX markup, the direct `MessageEntity` compilation pipeline, uniform text sanitization, Telegram nesting rule validation, character limit enforcement, Bot API 9.0 `<tg-time>` date normalization, nested lists, and live in-place message animation.
+This bot demonstrates the full spectrum of `@teleframe/view/native` capabilities: declarative JSX markup, the direct `MessageEntity` compilation pipeline, uniform text sanitization, Telegram nesting rule validation, character limit enforcement, Bot API 9.0 `<tg-time>` date normalization, nested lists, and live in-place message animation.
 
 ---
 

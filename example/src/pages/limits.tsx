@@ -14,7 +14,7 @@ import {
     P,
     Paragraph,
     renderToString,
-} from '@telegram-markup/native';
+} from '@teleframe/view/native';
 
 /**
  * Demonstrates pre-flight message and caption length verification,
@@ -59,7 +59,7 @@ const { text: caption } = render(myTree, { validate: 'caption' });`}
                 Silent truncation is dangerous: it cuts off critical transactional data, slices
                 surrogate pair emojis in half, and corrupts entity range alignments.
                 <Br count={2} />
-                <Code>@telegram-markup/native</Code> deliberately throws an informative{' '}
+                <Code>@teleframe/view/native</Code> deliberately throws an informative{' '}
                 <Code>TelegramLimitError</Code> detailing the exact excess count:
                 <Br />
                 <Italic>

@@ -13,7 +13,7 @@ import {
     P,
     Paragraph,
     renderToString,
-} from '@telegram-markup/native';
+} from '@teleframe/view/native';
 import type { TopicHubPageProps } from './types';
 
 /**
@@ -47,7 +47,7 @@ export const TopicHubPage = ({
                 <P>
                     <Bold>🚧 Preview Topic</Bold>
                     <Br />
-                    This topic is reserved for <Code>@telegram-markup/{category}</Code>.
+                    This topic is reserved for <Code>@teleframe/view/{category}</Code>.
                     <Br />
                     All components and interactive examples will be automatically routed here once
                     the package is loaded.
@@ -55,7 +55,7 @@ export const TopicHubPage = ({
             )}
 
             {/* Documentation Link */}
-            <Link href="https://github.com/naylour/telegram-markup">
+            <Link href="https://github.com/teleframe/view">
                 View source and documentation on GitHub
             </Link>
             <Br count={2} />

@@ -1,6 +1,6 @@
 # Architecture & Runtime
 
-`@telegram-markup/native` operates as a dual-target compilation pipeline: **Virtual Element Creation** followed by tree resolution and nesting validation, then either **Direct MessageEntity Compilation** or **HTML Serialization**. Length validation is optional.
+`@teleframe/view/native` operates as a dual-target compilation pipeline: **Virtual Element Creation** followed by tree resolution and nesting validation, then either **Direct MessageEntity Compilation** or **HTML Serialization**. Length validation is optional.
 
 ```
                   TSX Source Code

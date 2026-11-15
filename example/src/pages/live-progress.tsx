@@ -12,7 +12,7 @@ import {
     Paragraph,
     ProgressBar,
     renderToString,
-} from '@telegram-markup/native';
+} from '@teleframe/view/native';
 import type { LiveProgressPageProps } from './types';
 
 /**

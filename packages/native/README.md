@@ -1,18 +1,17 @@
-# @telegram-markup/native
+# Teleframe View — Native Engine (`@teleframe/view/native`)
 
-[![npm version](https://img.shields.io/npm/v/@telegram-markup/native.svg)](https://www.npmjs.com/package/@telegram-markup/native)
+[![npm version](https://img.shields.io/npm/v/@teleframe/view.svg)](https://www.npmjs.com/package/@teleframe/view)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Bun](https://img.shields.io/badge/Bun-1.4+-black.svg)](https://bun.sh)
-[![Tests](https://img.shields.io/badge/Tests-Passing-brightgreen.svg)](https://github.com/naylour/telegram-markup)
+[![Tests](https://img.shields.io/badge/Tests-Passing-brightgreen.svg)](https://github.com/teleframe/view)
 
-> **"A Message is a Page"**  
-> Native Telegram Bot API markup engine. Compiles declarative JSX/TSX components and zero-JSX functional trees directly into Telegram `MessageEntity[]` data structures and sanitized HTML.
+> Native Telegram Bot API markup module for `@teleframe/view`. Compiles declarative JSX/TSX components and zero-JSX functional trees directly into Telegram `MessageEntity[]` data structures and sanitized HTML.
 
 ---
 
 ## Table of Contents
 
-- [Why @telegram-markup/native?](#why-telegram-markupnative)
+- [Why Native Markup Engine?](#why-native-markup-engine)
 - [Installation & Integration Styles](#installation--integration-styles)
     - [Path 1: Dedicated Telegram Bot (Root tsconfig.json)](#path-1-dedicated-telegram-bot-recommended)
     - [Path 2: Monorepo / Multi-Project (Subproject tsconfig.json)](#path-2-monorepo--multi-project)
@@ -37,7 +36,7 @@
 
 ---
 
-## Why @telegram-markup/native?
+## Why Native Markup Engine?
 
 Telegram Bot message formatting has historically been notoriously brittle and error-prone:
 
@@ -46,7 +45,7 @@ Telegram Bot message formatting has historically been notoriously brittle and er
 - **Illegal Nesting Rejections**: Telegram strictly rejects formatting inside `<code>`, nested blockquotes, and nested links.
 - **Silent Truncation or Crashes on Limits**: Messages exceeding 4,096 characters (or 1,024 for media captions) fail with `400 Bad Request`.
 
-`@telegram-markup/native` solves this once and for all:
+`@teleframe/view/native` solves this once and for all:
 
 1. **Direct `MessageEntity` Compiler (`render`)**: Compiles JSX into `{ text, entities }` with UTF-16 offsets, without producing or parsing HTML.
 2. **HTML Serializer (`renderToString` / `renderHtml`)**: Escapes ordinary text and emits supported Telegram HTML tags for `parse_mode: 'HTML'`.
@@ -58,15 +57,15 @@ Telegram Bot message formatting has historically been notoriously brittle and er
 ## Installation & Integration Styles
 
 ```bash
-# Standalone package:
-bun add @telegram-markup/native
+# Install @teleframe/view:
+bun add @teleframe/view
 # or:
-npm install @telegram-markup/native
+npm install @teleframe/view
 
-# Or via unified umbrella package:
-bun add telegram-markup
-# or:
-npm install telegram-markup
+# In Deno:
+deno add npm:@teleframe/view
+# or via JSR:
+deno add jsr:@teleframe/view
 ```
 
 ### Path 1: Dedicated Telegram Bot (Recommended)
@@ -80,17 +79,15 @@ For projects dedicated to a Telegram bot. Set `jsxImportSource` once in `tsconfi
         "module": "ESNext",
         "moduleResolution": "bundler",
         "jsx": "react-jsx",
-        "jsxImportSource": "@telegram-markup/native"
+        "jsxImportSource": "@teleframe/view"
     }
 }
 ```
 
-_(If using the umbrella package, set `"jsxImportSource": "telegram-markup"`)._
-
 Usage in any `.tsx` file:
 
 ```tsx
-import { Bold, Italic, render } from '@telegram-markup/native';
+import { Bold, Italic, render } from '@teleframe/view/native';
 
 const { text, entities } = render(
     <Bold>
@@ -108,7 +105,7 @@ If you have a web frontend (React/Next.js/Solid) and a Telegram bot backend in t
     "extends": "../../tsconfig.json",
     "compilerOptions": {
         "jsx": "react-jsx",
-        "jsxImportSource": "@telegram-markup/native"
+        "jsxImportSource": "@teleframe/view"
     },
     "include": ["src/**/*"]
 }
@@ -119,8 +116,8 @@ If you have a web frontend (React/Next.js/Solid) and a Telegram bot backend in t
 In an existing project where you cannot change `tsconfig.json`, add this pragma to the top of your bot template files:
 
 ```tsx
-/** @jsxImportSource @telegram-markup/native */
-import { Bold, render } from '@telegram-markup/native';
+/** @jsxImportSource @teleframe/view */
+import { Bold, render } from '@teleframe/view/native';
 
 export const welcome = (name: string) => render(<Bold>Welcome, {name}!</Bold>);
 ```
@@ -130,7 +127,7 @@ export const welcome = (name: string) => render(<Bold>Welcome, {name}!</Bold>);
 No JSX configuration, no `.tsx` files, and zero `tsconfig.json` setup! Every component is available as a lowercase function:
 
 ```ts
-import { bold, italic, user, link, br, divider, renderHtml } from '@telegram-markup/native';
+import { bold, italic, user, link, br, divider, renderHtml } from '@teleframe/view/native';
 
 const message = [
     bold('Order #1042 Updated'),
@@ -147,12 +144,43 @@ const message = [
 const html = renderHtml(message);
 ```
 
+### Path 5: Deno Projects (`deno.json`)
+
+`@teleframe/view/native` is 100% compatible with Deno 2+:
+
+```json
+{
+    "compilerOptions": {
+        "jsx": "react-jsx",
+        "jsxImportSource": "@teleframe/view/native"
+    }
+}
+```
+
+```tsx
+import { Bot } from 'npm:grammy';
+import { Bold, Italic, render } from '@teleframe/view/native';
+
+const bot = new Bot(Deno.env.get('TELEGRAM_BOT_TOKEN')!);
+
+bot.command('hello', async (ctx) => {
+    const { text, entities } = render(
+        <Bold>
+            Hello from <Italic>Deno!</Italic>
+        </Bold>,
+    );
+    await ctx.reply(text, { entities });
+});
+
+bot.start();
+```
+
 ### 💡 Best Practice: Mixing Lowercase Helpers inside JSX
 
 You don't have to choose between JSX and functional helpers! You can embed lowercase helpers directly inside JSX expressions wherever JSX tags feel too verbose:
 
 ```tsx
-import { Paragraph, br, divider, emoji, mono, time, user } from '@telegram-markup/native';
+import { Paragraph, br, divider, emoji, mono, time, user } from '@teleframe/view/native';
 
 const screen = (
     <Paragraph>
@@ -222,7 +250,7 @@ Layout counts and sizes are normalized before repetition: non-finite values use 
 #### Universal `<List>`, `<Ul>`, `<Ol>`:
 
 ```tsx
-import { Ul, Ol, Li, List } from '@telegram-markup/native';
+import { Ul, Ol, Li, List } from '@teleframe/view/native';
 
 // 1. Unordered bullet presets: 'bullet' | 'dash' | 'check' | 'cross' | 'star' | 'arrow'
 <Ul bullet="check" spacing={1}>
@@ -245,7 +273,7 @@ import { Ul, Ol, Li, List } from '@telegram-markup/native';
 #### Declarative Collection Mapping (`<Each>`):
 
 ```tsx
-import { Each, Li, Ul } from '@telegram-markup/native';
+import { Each, Li, Ul } from '@teleframe/view/native';
 
 <Each items={users} as="ul" marker="• ">
     {(user, index) => (
@@ -263,7 +291,7 @@ import { Each, Li, Ul } from '@telegram-markup/native';
 #### Visual Progress Bar (`<ProgressBar>` / `progress`):
 
 ```tsx
-import { ProgressBar, progress } from '@telegram-markup/native';
+import { ProgressBar, progress } from '@teleframe/view/native';
 
 // Styles: 'blocks' (■■□□) | 'bar' (██░░) | 'circle' (●●○○) | 'emoji' (🟩⬜) | 'slider' (━━🔘━━)
 <ProgressBar value={75} total={100} style="bar" showPercent mono />;
@@ -273,7 +301,7 @@ import { ProgressBar, progress } from '@telegram-markup/native';
 #### Conditional Rendering (`<Show>` / `show`):
 
 ```tsx
-import { Show, Bold, Italic } from '@telegram-markup/native';
+import { Show, Bold, Italic } from '@teleframe/view/native';
 
 <Show when={user.isVip} fallback={<Italic>Standard Member</Italic>}>
     <Bold>🌟 VIP Member Active</Bold>
@@ -283,7 +311,7 @@ import { Show, Bold, Italic } from '@telegram-markup/native';
 #### Raw HTML Escape Hatch (`<RawHtml>` / `rawHtml`):
 
 ```tsx
-import { RawHtml } from '@telegram-markup/native';
+import { RawHtml } from '@teleframe/view/native';
 
 // Bypasses entity escaping ONLY for pre-sanitized, trusted HTML:
 <RawHtml html="<b>trusted <i>HTML</i> markup</b>" />;
@@ -373,7 +401,7 @@ Telegram Bot API enforces strict character count limits:
 ### Enabling Pre-flight Validation:
 
 ```tsx
-import { render, renderToString } from '@telegram-markup/native';
+import { render, renderToString } from '@teleframe/view/native';
 
 // 1. In render() (MessageEntity mode):
 const { text, entities } = render(screen, { validate: 'message' });
@@ -432,13 +460,13 @@ Some features depend directly on the bot's account privileges and user privacy s
 | :------------------------ | :-------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------- |
 | **User Mention by ID**    | `<User id={123}>` / `user(123, 'Name')` | Works only if the user has previously interacted with the bot, has open privacy settings, or is a member of the same group chat as the bot. Otherwise, Telegram renders the link or ignores the mention.                                                                                           | [Formatting Options](https://core.telegram.org/bots/api#formatting-options) |
 | **Custom Animated Emoji** | `<Emoji id="...">` / `emoji(...)`       | Can only be used by bots that purchased additional usernames on [Fragment](https://fragment.com) or in messages sent by the bot to private, group, and supergroup chats if the owner of the bot has a Telegram Premium subscription. A valid standard emoji must be provided as fallback children. | [Formatting Options](https://core.telegram.org/bots/api#formatting-options) |
-| **Nested Quotes**         | `<blockquote>`                          | Telegram Bot API strictly forbids nesting blockquotes inside other blockquotes. Caught pre-flight by `@telegram-markup/native`.                                                                                                                                                                    | [Formatting Options](https://core.telegram.org/bots/api#formatting-options) |
+| **Nested Quotes**         | `<blockquote>`                          | Telegram Bot API strictly forbids nesting blockquotes inside other blockquotes. Caught pre-flight by `@teleframe/view/native`.                                                                                                                                                                     | [Formatting Options](https://core.telegram.org/bots/api#formatting-options) |
 
 ---
 
 ## Package Scope & Architecture
 
-`@telegram-markup/native` is purposefully designed as a **focused, no-runtime-dependency message markup and formatting engine**:
+`@teleframe/view/native` is purposefully designed as a **focused, no-runtime-dependency message markup and formatting engine**:
 
 - **What it does:**
     - Compiles declarative JSX/TSX and functional trees into Telegram-compliant HTML strings (`parse_mode: 'HTML'`).
@@ -449,7 +477,7 @@ Some features depend directly on the bot's account privileges and user privacy s
     - It does **not** build keyboards (`InlineKeyboardMarkup`, `ReplyKeyboardMarkup`).
     - It does **not** manage webhooks or long-polling.
 
-Because it does not tie you to any specific bot framework, you can use `@telegram-markup/native` with **grammY, Telegraf, Puregram, node-telegram-bot-api, or native `fetch`**.
+Because it does not tie you to any specific bot framework, you can use `@teleframe/view/native` with **grammY, Telegraf, Puregram, node-telegram-bot-api, or native `fetch`**.
 
 ---
 
@@ -459,7 +487,7 @@ Because it does not tie you to any specific bot framework, you can use `@telegra
 
 ```tsx
 import { Bot } from 'grammy';
-import { Bold, Italic, Link, render, renderToString } from '@telegram-markup/native';
+import { Bold, Italic, Link, render, renderToString } from '@teleframe/view/native';
 
 const bot = new Bot(process.env.BOT_TOKEN!);
 
@@ -490,7 +518,7 @@ bot.start();
 
 ```tsx
 import { Telegraf } from 'telegraf';
-import { Bold, render, renderToString } from '@telegram-markup/native';
+import { Bold, render, renderToString } from '@teleframe/view/native';
 
 const bot = new Telegraf(process.env.BOT_TOKEN!);
 

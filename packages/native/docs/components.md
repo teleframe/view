@@ -1,6 +1,6 @@
 # Components Guide
 
-`@telegram-markup/native` provides TypeScript components and functional helpers for text formatting and message layout. TypeScript catches some invalid child combinations; runtime validation remains authoritative.
+`@teleframe/view/native` provides TypeScript components and functional helpers for text formatting and message layout. TypeScript catches some invalid child combinations; runtime validation remains authoritative.
 
 ---
 
@@ -10,7 +10,7 @@
 import {
   Bold, Italic, Underline, Strike, Spoiler,
   Link, User, Emoji, Mono, Code, CodeBlock, Pre, Blockquote
-} from '@telegram-markup/native';
+} from '@teleframe/view/native';
 
 // Standard formatting:
 <Bold>Bold</Bold>
@@ -29,7 +29,7 @@ import {
 
 // Monospace & Syntax Highlighted Code:
 <Mono>token</Mono>
-<Code>npm i @telegram-markup/native</Code>
+<Code>npm i @teleframe/view/native</Code>
 <CodeBlock language="typescript">
   const greeting = "Hello Telegram";
 </CodeBlock>
@@ -51,7 +51,7 @@ Numeric layout values are normalized before string repetition: non-finite values
 Template literals often suffer from messy `\n\n` sequences. The `<Br>` component provides clean, readable spacing:
 
 ```tsx
-import { Br } from '@telegram-markup/native';
+import { Br } from '@teleframe/view/native';
 
 <Br />          // 1 line break: '\n'
 <Br count={2} /> // 2 line breaks: '\n\n'
@@ -63,7 +63,7 @@ import { Br } from '@telegram-markup/native';
 Visually and semantically separate blocks of text with automatic trailing line breaks:
 
 ```tsx
-import { Paragraph, P } from '@telegram-markup/native';
+import { Paragraph, P } from '@teleframe/view/native';
 
 // Default spacing appends \n\n (standard paragraph separation)
 <Paragraph>
@@ -83,7 +83,7 @@ import { Paragraph, P } from '@telegram-markup/native';
 ### Horizontal Dividers (`<Divider />` / `<Hr />`)
 
 ```tsx
-import { Divider, Hr } from '@telegram-markup/native';
+import { Divider, Hr } from '@teleframe/view/native';
 
 <Divider />                      // \n────────────────────\n
 <Divider char="━" length={15} /> // \n━━━━━━━━━━━━━━━\n
@@ -99,7 +99,7 @@ import { Divider, Hr } from '@telegram-markup/native';
 Eliminates verbose and error-prone ternary operators. It unwraps truthy values directly into a typed callback:
 
 ```tsx
-import { Show } from '@telegram-markup/native';
+import { Show } from '@teleframe/view/native';
 
 <Show when={user.isVip} fallback={<i>Standard Tier</i>}>
   <b>🌟 VIP Member</b>
@@ -116,7 +116,7 @@ import { Show } from '@telegram-markup/native';
 A high-DX collection mapper supporting multiple presentation layouts:
 
 ```tsx
-import { Each } from '@telegram-markup/native';
+import { Each } from '@teleframe/view/native';
 
 // 1. Plain items with default line breaks
 <Each items={['Item 1', 'Item 2', 'Item 3']} />

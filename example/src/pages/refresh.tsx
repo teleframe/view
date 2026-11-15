@@ -3,7 +3,7 @@
  * @module examples/native/src/pages/refresh
  */
 
-import { Bold, Br, Code, renderToString } from '@telegram-markup/native';
+import { Bold, Br, Code, renderToString } from '@teleframe/view/native';
 
 /**
  * Properties for the RefreshPage component.

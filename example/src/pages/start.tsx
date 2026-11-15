@@ -14,7 +14,7 @@ import {
     Show,
     User,
     renderToString,
-} from '@telegram-markup/native';
+} from '@teleframe/view/native';
 import type { StartPageProps } from './types';
 
 /**

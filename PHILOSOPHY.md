@@ -134,46 +134,14 @@ const OrderPage = ({ order }: { order: Order }) => (
 
 ## 6. Modular Ecosystem Architecture
 
-1. **`@telegram-markup/native` (Release v0.1.0 — Production Ready)**: automated HTML escaping for `&`, `<`, `>`, semantic `<Paragraph>` / `<P>` dividers, monospaced `<Table>` with CJK/emoji support, dynamic `<ProgressBar>`, list builders (`<Ul>`, `<Ol>`), control flow (`<Show>`, `<Each>`), Bot API 9.0 support (`<tg-time>`, `<tg-emoji>`, quotes).
-2. **`@telegram-markup/rich-text` (In Development)**: composite cards, carousels, and content panels.
-3. **`@telegram-markup/widget` (Planned)**: stateful forms, date pickers, and paginators with built-in navigation state.
-4. **`@telegram-markup/telegraph` (Planned)**: publishing long-form Telegra.ph articles directly from JSX.
+1. **`@teleframe/view/native` (Release v0.1.0 — Production Ready)**: automated HTML escaping for `&`, `<`, `>`, semantic `<Paragraph>` / `<P>` dividers, monospaced `<Table>` with CJK/emoji support, dynamic `<ProgressBar>`, list builders (`<Ul>`, `<Ol>`), control flow (`<Show>`, `<Each>`), Bot API 9.0 support (`<tg-time>`, `<tg-emoji>`, quotes).
+2. **`@teleframe/rich-text` (In Development)**: composite cards, carousels, and content panels.
+3. **`@teleframe/widget` (Planned)**: stateful forms, date pickers, and paginators with built-in navigation state.
+4. **`@teleframe/telegraph` (Planned)**: publishing long-form Telegra.ph articles directly from JSX.
 
 ---
 
-## 7. The Next Step: `@telegram-markup/router` as a Finite State Machine (FSM)
-
-To replace brittle, imperative `conversations`, we are engineering **`@telegram-markup/router`** for [grammY](https://grammy.dev).
-
-The fundamental architectural principle: **Every `Router` manages the lifecycle of a single interactive message**, while each **`Route` is a screen (an FSM state)** that seamlessly updates that message in-place via `editMessageText`.
-
-For sequential workflows (wizards, profile editors, multi-step settings), routers can be nested as isolated sub-state machines (Sub-FSM):
-
-```tsx
-// Primary router bound to an interactive message:
-<Router start="catalog">
-    <Route path="catalog" component={CatalogPage} />
-    <Route path="profile" component={ProfilePage} />
-
-    {/* Nested Sub-FSM router for multi-step form input: */}
-    <Route path="profile/edit">
-        <Router start="set-fio" mode="in-place">
-            <Route path="set-fio" component={SetFioStep} />
-            <Route path="set-age" component={SetAgeStep} />
-            <Route path="confirm" component={ConfirmStep} />
-        </Router>
-    </Route>
-</Router>
-```
-
-**Flexible FSM Modes**:
-
-- **In-place SPA Mode (`mode="in-place"`)**: Edits the active message in-place, automatically managing the navigation history stack for back buttons.
-- **New Message Mode (`mode="new-message"`)**: When a flow requires branching into a distinct dialog or modal prompt, the router dispatches a fresh message as an isolated container for a new FSM.
-
----
-
-## 8. Advantages and Platform Considerations
+## 7. Advantages and Platform Considerations
 
 ### Advantages
 

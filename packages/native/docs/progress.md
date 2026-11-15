@@ -1,13 +1,13 @@
 # Visual Progress Bars
 
-`@telegram-markup/native` provides a lightweight, pure Unicode visual progress bar component (`<ProgressBar>` / `<Progress>`) for rendering progress indicators in Telegram bots.
+`@teleframe/view/native` provides a lightweight, pure Unicode visual progress bar component (`<ProgressBar>` / `<Progress>`) for rendering progress indicators in Telegram bots.
 
 ---
 
 ## 1. Quick Example
 
 ```tsx
-import { ProgressBar } from '@telegram-markup/native';
+import { ProgressBar } from '@teleframe/view/native';
 
 // 1. Standard Blocks
 <ProgressBar value={45} total={100} showPercent />

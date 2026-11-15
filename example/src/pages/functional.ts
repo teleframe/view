@@ -30,7 +30,7 @@ import {
     ul,
     underline,
     user,
-} from 'telegram-markup';
+} from '@teleframe/view';
 
 export interface FunctionalPageProps {
     userId: number;
@@ -94,7 +94,7 @@ export const renderFunctionalPage = (props: FunctionalPageProps): string => {
         user(props.userId, props.firstName),
         br(),
         '• Hyperlink: ',
-        link('https://github.com/naylour/telegram-markup', 'GitHub Repo'),
+        link('https://github.com/teleframe/view', 'GitHub Repo'),
         br(),
         '• Custom Emoji: ',
         emoji('5368324170671202286', '👍'),
@@ -144,7 +144,7 @@ export const renderFunctionalPage = (props: FunctionalPageProps): string => {
             start: 1,
             numberStyle: 'roman',
             children: [
-                li('Install package: bun add telegram-markup'),
+                li('Install package: bun add @teleframe/view'),
                 li('Import lowercase functions'),
                 li('Call renderHtml(message) or render(message)'),
             ],
@@ -180,7 +180,7 @@ export const renderFunctionalPage = (props: FunctionalPageProps): string => {
         bold('7. Code Block Helper:'),
         br(),
         codeblock(
-            "import { bold, italic, renderHtml } from 'telegram-markup';\n\nconst msg = [bold('Hello'), ' ', italic('world!')];\nconst html = renderHtml(msg);",
+            "import { bold, italic, renderHtml } from '@teleframe/view';\n\nconst msg = [bold('Hello'), ' ', italic('world!')];\nconst html = renderHtml(msg);",
             'typescript',
         ),
         hr(),

@@ -16,7 +16,7 @@ import {
     Paragraph,
     RawHtml,
     renderToString,
-} from '@telegram-markup/native';
+} from '@teleframe/view/native';
 
 /**
  * Demonstrates automatic HTML sanitization, URL scheme validation,
@@ -34,7 +34,7 @@ export const SafetyPage = () => {
             </Paragraph>
             <P>
                 Dynamic user input is one of the primary sources of Telegram Bot API errors.
-                <Code>@telegram-markup/native</Code> guarantees pre-flight security and rule
+                <Code>@teleframe/view/native</Code> guarantees pre-flight security and rule
                 verification.
             </P>
             <Divider char="─" length={28} />

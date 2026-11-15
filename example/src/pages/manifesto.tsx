@@ -12,7 +12,7 @@ import {
     P,
     Paragraph,
     renderToString,
-} from '@telegram-markup/native';
+} from '@teleframe/view/native';
 
 /**
  * Manifesto page component explaining the core philosophy, the evolution from tg-widgets,
@@ -58,19 +58,8 @@ export const ManifestoPage = () => {
             </Blockquote>
             <Br count={2} />
 
-            {/* Roadmap */}
-            <Blockquote expandable>
-                <Bold>The Future: Declarative Router for grammY</Bold>
-                <Br />
-                In parallel, the <Code>@telegram-markup/router</Code> package is in active
-                development. It connects pages into a coherent navigation system: you define screens
-                and interactive inline buttons using JSX, and the router automatically updates the
-                message in-place without notification noise or screen jumps.
-            </Blockquote>
-            <Br count={2} />
-
             {/* Documentation link */}
-            <Link href="https://github.com/naylour/telegram-markup/blob/main/PHILOSOPHY.md">
+            <Link href="https://github.com/teleframe/view/blob/main/PHILOSOPHY.md">
                 Read the full philosophy in PHILOSOPHY.md
             </Link>
         </>

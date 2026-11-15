@@ -17,7 +17,7 @@ Raw Telegram time format strings are cryptic and non-intuitive:
 The `<Time>` component accepts JavaScript `Date` objects or Unix timestamps (seconds or milliseconds), format aliases, and boolean format flags. It emits a static fallback string for clients that do not render `tg-time` interactively; it does not update text on the server:
 
 ```tsx
-import { Time } from '@telegram-markup/native';
+import { Time } from '@teleframe/view/native';
 
 // 1. Using Human-Readable Aliases
 <Time date={new Date()} format="relative" />      // "5 minutes ago"
@@ -57,7 +57,7 @@ Raw format strings matching Telegram’s pattern are also accepted. The package 
 Constructing clean indented bullet or numbered lists in Telegram messages is made effortless with dedicated list components.
 
 ```tsx
-import { Li, Ol, Ul } from '@telegram-markup/native';
+import { Li, Ol, Ul } from '@teleframe/view/native';
 
 // Unordered List with presets:
 <Ul bullet="check">

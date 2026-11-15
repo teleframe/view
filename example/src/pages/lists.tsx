@@ -13,7 +13,7 @@ import {
     Ol,
     Ul,
     renderToString,
-} from '@telegram-markup/native';
+} from '@teleframe/view/native';
 
 /**
  * Lists demonstration component.

@@ -14,7 +14,7 @@ import {
     Time,
     Underline,
     renderToString,
-} from '@telegram-markup/native';
+} from '@teleframe/view/native';
 
 /**
  * Typography showcase component.

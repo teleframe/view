@@ -1,7 +1,7 @@
 {
-    "name": "telegram-markup",
+    "name": "@teleframe/view",
     "version": "0.1.0",
-    "description": "Declarative JSX/TSX markup engine for Telegram bots (Native Text, Rich Messages, HTML Widgets, Telegraph)",
+    "description": "Declarative JSX/TSX view engine for Telegram bots (Native Text, Rich Messages, HTML Widgets, Telegraph)",
     "type": "module",
     "main": "./dist/index.js",
     "module": "./dist/index.js",
@@ -9,39 +9,45 @@
     "exports": {
         ".": {
             "types": "./dist/index.d.ts",
+            "deno": "./dist/index.js",
             "bun": "./dist/bun/index.js",
             "import": "./dist/index.js",
             "default": "./dist/index.js"
         },
         "./native": {
             "types": "./dist/native/index.d.ts",
+            "deno": "./dist/native/index.js",
             "bun": "./dist/bun/native/index.js",
             "import": "./dist/native/index.js",
             "default": "./dist/native/index.js"
         },
         "./native/jsx-runtime": {
             "types": "./dist/native/jsx-runtime.d.ts",
+            "deno": "./dist/native/jsx-runtime.js",
             "bun": "./dist/bun/native/jsx-runtime.js",
             "import": "./dist/native/jsx-runtime.js",
             "default": "./dist/native/jsx-runtime.js"
         },
         "./native/jsx-dev-runtime": {
             "types": "./dist/native/jsx-dev-runtime.d.ts",
+            "deno": "./dist/native/jsx-dev-runtime.js",
             "bun": "./dist/bun/native/jsx-dev-runtime.js",
             "import": "./dist/native/jsx-dev-runtime.js",
             "default": "./dist/native/jsx-dev-runtime.js"
         },
         "./jsx-runtime": {
-            "types": "./dist/native/jsx-runtime.d.ts",
-            "bun": "./dist/bun/native/jsx-runtime.js",
-            "import": "./dist/native/jsx-runtime.js",
-            "default": "./dist/native/jsx-runtime.js"
+            "types": "./dist/jsx-runtime.d.ts",
+            "deno": "./dist/jsx-runtime.js",
+            "bun": "./dist/bun/jsx-runtime.js",
+            "import": "./dist/jsx-runtime.js",
+            "default": "./dist/jsx-runtime.js"
         },
         "./jsx-dev-runtime": {
-            "types": "./dist/native/jsx-dev-runtime.d.ts",
-            "bun": "./dist/bun/native/jsx-dev-runtime.js",
-            "import": "./dist/native/jsx-dev-runtime.js",
-            "default": "./dist/native/jsx-dev-runtime.js"
+            "types": "./dist/jsx-dev-runtime.d.ts",
+            "deno": "./dist/jsx-dev-runtime.js",
+            "bun": "./dist/bun/jsx-dev-runtime.js",
+            "import": "./dist/jsx-dev-runtime.js",
+            "default": "./dist/jsx-dev-runtime.js"
         }
     },
     "files": [
@@ -54,11 +60,13 @@
         "build:dev": "bun build.ts --dev",
         "build:watch": "bun --watch build.ts --dev --no-types",
         "check": "tsc --noEmit",
+        "check:deno": "deno task check",
         "fmt": "bun fmt",
         "fmt:check": "bun fmt --check",
         "hooks:check": "mise exec -- hk check --all",
         "hooks:install": "mise exec -- hk install --mise",
         "test": "bun test",
+        "test:deno": "deno test tests/deno.test.tsx",
         "env:setup": "bun scripts/fnox.ts setup",
         "env:status": "bun scripts/fnox.ts status",
         "env:prod": "bun scripts/fnox.ts prod",
@@ -73,17 +81,17 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/naylour/telegram-markup.git"
+        "url": "https://github.com/teleframe/view.git"
     },
     "bugs": {
-        "url": "https://github.com/naylour/telegram-markup/issues"
+        "url": "https://github.com/teleframe/view/issues"
     },
-    "homepage": "https://github.com/naylour/telegram-markup#readme",
+    "homepage": "https://github.com/teleframe/view#readme",
     "keywords": [
+        "teleframe",
+        "teleframe-view",
         "telegram",
         "telegram-bot",
-        "tg-markup",
-        "telegram-markup",
         "jsx",
         "tsx",
         "grammy",

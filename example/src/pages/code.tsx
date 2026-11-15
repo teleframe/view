@@ -3,7 +3,7 @@
  * @module examples/native/src/pages/code
  */
 
-import { Bold, Br, Code, CodeBlock, renderToString } from '@telegram-markup/native';
+import { Bold, Br, Code, CodeBlock, renderToString } from '@teleframe/view/native';
 
 /**
  * Code demonstration component.
@@ -23,7 +23,7 @@ export const CodePage = () => {
             TypeScript Snippet (<Code>{'<CodeBlock language="typescript">'}</Code>):
             <CodeBlock language="typescript">
                 {`import { Bot } from 'grammy';
-import { Bold, render } from '@telegram-markup/native';
+import { Bold, render } from '@teleframe/view/native';
 
 const bot = new Bot(process.env.BOT_TOKEN!);
 

@@ -2,7 +2,7 @@
 
 > **"A Message is a Page"**
 
-`@telegram-markup/native` is a declarative TypeScript/JSX toolkit for constructing Telegram message text with `MessageEntity[]` or Telegram HTML.
+`@teleframe/view/native` is a declarative TypeScript/JSX toolkit for constructing Telegram message text with `MessageEntity[]` or Telegram HTML.
 
 ---
 
@@ -21,10 +21,10 @@ Developers building Telegram bots historically face three major challenges when 
 
 ## Our Approach: Declarative JSX for Telegram
 
-`@telegram-markup/native` treats Telegram messages as componentized user interfaces:
+`@teleframe/view/native` treats Telegram messages as componentized user interfaces:
 
 ```tsx
-import { Bold, Each, Italic, Link, Show, render, renderToString } from '@telegram-markup/native';
+import { Bold, Each, Italic, Link, Show, render, renderToString } from '@teleframe/view/native';
 
 function ProfileCard({ user, orders }) {
     return (

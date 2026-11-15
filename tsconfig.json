@@ -17,6 +17,7 @@
             "@native/*": ["./packages/native/lib/*"],
             "@teleframe/view": ["./src/index.ts"],
             "@teleframe/view/native": ["./packages/native/lib/index.ts"],
+            "@teleframe/view/native/*": ["./packages/native/lib/*"],
             "@teleframe/view/jsx-runtime": ["./src/jsx-runtime.ts"],
             "@teleframe/view/jsx-dev-runtime": ["./src/jsx-dev-runtime.ts"],
             "@teleframe/view/native/jsx-runtime": ["./packages/native/lib/jsx-runtime.ts"],

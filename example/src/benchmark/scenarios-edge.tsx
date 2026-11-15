@@ -17,7 +17,7 @@ import {
     renderToString,
 } from '@teleframe/view/native';
 import { measureScenario } from './runner';
-import { realWorldTree } from './scenarios-flat';
+import { realWorldTree } from './scenarios-nested';
 
 export function runEdgeScenarios() {
     console.log('\n📂 3. ГРАНИЧНЫЕ СООБЩЕНИЯ (Boundary Messages / Limits & Encodings):');
