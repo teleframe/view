@@ -44,6 +44,8 @@ import {
 
 ## 2. Spacing & Dividers
 
+Numeric layout values are normalized before string repetition: non-finite values fall back to defaults, fractions are truncated, and values are clamped. Current bounds include 1–100 for line/list spacing, 0–100 for blank lines and indentation, 1–4096 for divider length, and 1–4096 for progress-bar size. Custom marker and glyph strings are not length-limited.
+
 ### Clean Line Breaks (`<Br />`)
 
 Template literals often suffer from messy `\n\n` sequences. The `<Br>` component provides clean, readable spacing:

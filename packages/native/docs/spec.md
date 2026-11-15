@@ -9,6 +9,8 @@
 
 ### 1.1 Types & Signatures
 
+Security validation errors are instances of the exported `TelegramSecurityError`. Nesting and output-length failures use `TelegramNestingError` and `TelegramLimitError`. Other malformed component arguments may throw a regular `Error`.
+
 ```typescript
 export interface RenderOptions {
     /** Validate output length against Telegram Bot API limits */

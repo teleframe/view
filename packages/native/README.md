@@ -207,6 +207,8 @@ All components support:
 
 ### 2. Layout, Spacing & Dividers
 
+Layout counts and sizes are normalized before repetition: non-finite values use their default, fractional values are truncated, and values are clamped to component-specific bounds (for example, line counts and indentation are capped at 100; divider length is capped at 4,096). This bounds numeric repetition counts; custom strings such as divider characters and progress-bar glyphs remain caller-provided output.
+
 | Component                                     | Lowercase Helper                           | Props                                                                   | Output & Behavior                                            |
 | :-------------------------------------------- | :----------------------------------------- | :---------------------------------------------------------------------- | :----------------------------------------------------------- |
 | `<Br count={2} as="newline" />`               | `br(count?)`                               | `count?: number`, `as?: 'newline' \| 'br'`                              | Appends newlines; HTML mode also supports `<br>` tags.       |
@@ -389,6 +391,8 @@ const html = renderToString(screen, { validate: 'message' });
 ---
 
 ## Security Model & URL Scheme Whitelist
+
+Security validation failures throw the exported `TelegramSecurityError` (`instanceof Error`). Other invalid component arguments may throw a regular `Error`; nesting and length validation use `TelegramNestingError` and `TelegramLimitError`, respectively.
 
 1. **Automatic HTML Entity Escaping**:
    All dynamic expressions, variables, list markers, and divider characters are escaped automatically:
