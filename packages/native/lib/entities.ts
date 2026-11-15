@@ -8,7 +8,7 @@ import { isValidUrl } from './sanitizer';
 import type { NativeChildren } from './tags/base';
 import { normalizeTimeFormat, normalizeTimestamp } from './tags/time';
 import { resolveTree } from './tree';
-import { validateNesting } from './validation/nesting';
+import { TelegramNestingError, validateNesting } from './validation/nesting';
 
 export interface BaseMessageEntity {
     type: string;
@@ -169,16 +169,22 @@ export const validateEntitiesOverlap = (entities: MessageEntity[]): void => {
             // b starts inside a (b.offset < aEnd).
             // For valid nesting, b must also end within a (bEnd <= aEnd).
             if (bEnd > aEnd) {
-                throw new Error(
-                    `[Telegram Markup] Entity boundary violation: Entities of type "${a.type}" [${a.offset}..${aEnd}] and "${b.type}" [${b.offset}..${bEnd}] intersect invalidly. In Telegram Bot API, entities must be strictly nested or disjoint.`,
+                throw new TelegramNestingError(
+                    `Telegram Bot API boundary violation: Entities of type "${a.type}" [${a.offset}..${aEnd}] and "${b.type}" [${b.offset}..${bEnd}] intersect invalidly. In Telegram Bot API, entities must be strictly nested or disjoint.`,
+                    a.type,
+                    b.type,
+                    `${a.type} & ${b.type}`,
                 );
             }
 
             // In Telegram Bot API, when b is contained within a (or identical ranges),
             // verify their type compatibility.
             if (!isEntityNestingAllowed(a.type, b.type)) {
-                throw new Error(
-                    `[Telegram Markup] Entity nesting violation: Entity of type "${b.type}" [${b.offset}..${bEnd}] cannot be nested inside entity of type "${a.type}" [${a.offset}..${aEnd}]. Per Telegram Bot API formatting rules, this combination is incompatible.`,
+                throw new TelegramNestingError(
+                    `Telegram Bot API nesting violation: Entity of type "${b.type}" [${b.offset}..${bEnd}] cannot be nested inside entity of type "${a.type}" [${a.offset}..${aEnd}]. Per Telegram Bot API formatting rules, this combination is incompatible.`,
+                    a.type,
+                    b.type,
+                    `${a.type} > ${b.type}`,
                 );
             }
         }

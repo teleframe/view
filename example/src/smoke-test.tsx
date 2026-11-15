@@ -256,8 +256,7 @@ async function runSmokeTests() {
     );
 
     // 9. Zero-JSX Functional Builder Mode (HTML)
-    await sendHtmlTest(
-        '9. Zero-JSX Functional Builder (HTML)',
+    await sendHtmlTest('9. Zero-JSX Functional Builder (HTML)', [
         bold([
             '⚡ Functional Zero-JSX Builder: ',
             italic('Clean functions without JSX pragma!'),
@@ -267,10 +266,10 @@ async function runSmokeTests() {
             spoiler('Spoiler via helper'),
             '\n',
             link('https://github.com/naylour/telegram-markup', 'Documentation Link'),
-            '\n',
-            blockquote(['Quotation built via ', code('blockquote()'), ' helper!']),
         ]),
-    );
+        '\n\n',
+        blockquote(['Quotation built via ', code('blockquote()'), ' helper!']),
+    ]);
 
     // 10. Summary Report
     const successCount = reports.filter((r) => r.success).length;
