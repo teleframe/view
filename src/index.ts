@@ -4,7 +4,7 @@
  * @module @teleframe/view
  */
 
-import * as native from '@view/native';
+import * as native from '../packages/native/lib';
 
 /**
  * Namespaced export for Native Bot API formatting engine.
@@ -21,4 +21,4 @@ import * as native from '@view/native';
 export { native, native as Native };
 
 // Direct flat re-exports for convenience and quick start
-export * from '@view/native';
+export * from '../packages/native/lib';

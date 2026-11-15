@@ -3,8 +3,8 @@
  * @module @teleframe/view/native/components/emoji/emoji
  */
 
-import { TelegramSecurityError } from '@native/sanitizer';
-import type { EmojiChildren, TelegramNativeElement } from '@native/tags/base';
+import { TelegramSecurityError } from '../../sanitizer';
+import type { EmojiChildren, TelegramNativeElement } from '../../tags/base';
 import type { NativeEmojiProps } from './types';
 
 /**
@@ -40,7 +40,13 @@ export function Emoji(
         );
     }
 
-    return <tg-emoji emoji-id={strId}>{children}</tg-emoji>;
+    return {
+        type: 'tg-emoji',
+        props: {
+            'emoji-id': strId,
+            children,
+        },
+    };
 }
 
 /**

@@ -3,7 +3,7 @@
  * @module @teleframe/view/native/components/show/show
  */
 
-import type { NativeChildren, TelegramNativeElement } from '@native/tags/base';
+import type { NativeChildren, TelegramNativeElement } from '../../tags/base';
 import type { NativeShowProps } from './types';
 
 /**
@@ -27,7 +27,7 @@ import type { NativeShowProps } from './types';
  * </Show>
  * ```
  */
-export const Show = <T = any,>({
+export const Show = <T = any>({
     when,
     fallback = null,
     children,
@@ -46,7 +46,7 @@ export const Show = <T = any,>({
 /**
  * Functional helper for conditional rendering without JSX.
  */
-export const show = <T = any,>(props: NativeShowProps<T>): TelegramNativeElement | any =>
+export const show = <T = any>(props: NativeShowProps<T>): TelegramNativeElement | any =>
     Show(props);
 
 export default Show;

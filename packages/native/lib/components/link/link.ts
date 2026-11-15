@@ -3,7 +3,8 @@
  * @module @teleframe/view/native/components/link/link
  */
 
-import type { NativeChildren, TelegramNativeElement } from '@native/tags/base';
+import type { NativeChildren, TelegramNativeElement } from '../../tags/base';
+import { User } from '../user';
 import type { NativeLinkProps } from './types';
 
 /**
@@ -22,23 +23,29 @@ export function Link(
     if (typeof propsOrTarget === 'object' && propsOrTarget !== null) {
         const { children: c, href, userId } = propsOrTarget as NativeLinkProps;
         if (userId !== undefined) {
-            return <user id={userId}>{c}</user>;
+            return User({ id: userId, children: c });
         }
         if (!href) {
             throw new Error('[Telegram Markup] <Link> requires either an "href" or "userId" prop.');
         }
-        return <a href={href}>{c}</a>;
+        return {
+            type: 'a',
+            props: { href, children: c },
+        };
     }
 
     if (typeof propsOrTarget === 'number' || typeof propsOrTarget === 'bigint') {
-        return <user id={propsOrTarget}>{children}</user>;
+        return User({ id: propsOrTarget, children });
     }
 
     if (typeof propsOrTarget === 'string') {
         if (!propsOrTarget.trim()) {
             throw new Error('[Telegram Markup] <Link> requires a non-empty "href" prop.');
         }
-        return <a href={propsOrTarget}>{children}</a>;
+        return {
+            type: 'a',
+            props: { href: propsOrTarget, children },
+        };
     }
 
     throw new Error('[Telegram Markup] link requires target URL string or userId number.');

@@ -3,7 +3,7 @@
  * @module @teleframe/view/native/components/list/types
  */
 
-import type { BaseNativeTagProps } from '@native/tags/base';
+import type { BaseNativeTagProps } from '../../tags/base';
 
 /**
  * Supported list types: bullet points, ordered numbers, or dashes.

@@ -3,7 +3,7 @@
  * @module @teleframe/view/native/components/italic/types
  */
 
-import type { BaseNativeTagWithTagNameProps } from '@native/tags/base';
+import type { BaseNativeTagWithTagNameProps } from '../../tags/base';
 
 /**
  * Properties for `<Italic>` component.

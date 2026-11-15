@@ -3,8 +3,8 @@
  * @module @teleframe/view/native/components/code/code
  */
 
-import type { CodeChildren, TelegramNativeElement } from '@native/tags/base';
-import type { Language } from '@native/tags/languages';
+import type { CodeChildren, TelegramNativeElement } from '../../tags/base';
+import type { Language } from '../../tags/languages';
 import type { NativeCodeProps } from './types';
 
 /**
@@ -21,9 +21,29 @@ export function Code(propsOrChildren: NativeCodeProps | CodeChildren): TelegramN
         ('children' in propsOrChildren || 'language' in propsOrChildren)
     ) {
         const { children, language } = propsOrChildren as NativeCodeProps;
-        return <code language={language}>{children}</code>;
+        if (language) {
+            return {
+                type: 'pre',
+                props: {
+                    children: {
+                        type: 'code',
+                        props: {
+                            class: `language-${language}`,
+                            children,
+                        },
+                    },
+                },
+            };
+        }
+        return {
+            type: 'code',
+            props: { children },
+        };
     }
-    return <code>{propsOrChildren as CodeChildren}</code>;
+    return {
+        type: 'code',
+        props: { children: propsOrChildren as CodeChildren },
+    };
 }
 
 /**

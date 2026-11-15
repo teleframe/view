@@ -3,7 +3,7 @@
  * @module @teleframe/view/native/components/paragraph/types
  */
 
-import type { BaseNativeTagProps } from '@native/tags/base';
+import type { BaseNativeTagProps } from '../../tags/base';
 
 /**
  * Properties for `<Paragraph>` and `<P>` text block components.

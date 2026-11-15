@@ -3,7 +3,7 @@
  * @module @teleframe/view/native/components/br/br
  */
 
-import type { TelegramNativeElement } from '@native/tags/base';
+import type { TelegramNativeElement } from '../../tags/base';
 import type { NativeBrProps } from './types';
 
 /**
@@ -14,10 +14,16 @@ export function Br(props?: NativeBrProps): TelegramNativeElement;
 export function Br(count?: number): TelegramNativeElement;
 export function Br(propsOrCount?: NativeBrProps | number): TelegramNativeElement {
     if (typeof propsOrCount === 'number') {
-        return <br count={propsOrCount} as="newline" />;
+        return {
+            type: 'br',
+            props: { count: propsOrCount, as: 'newline' },
+        };
     }
     const { count = 1, lines, as = 'newline' } = propsOrCount ?? {};
-    return <br count={lines ?? count} as={as} />;
+    return {
+        type: 'br',
+        props: { count: lines ?? count, as },
+    };
 }
 
 /**

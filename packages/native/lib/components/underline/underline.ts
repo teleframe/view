@@ -3,7 +3,7 @@
  * @module @teleframe/view/native/components/underline/underline
  */
 
-import type { NativeChildren, TelegramNativeElement } from '@native/tags/base';
+import type { NativeChildren, TelegramNativeElement } from '../../tags/base';
 import type { NativeUnderlineProps } from './types';
 
 /**
@@ -22,12 +22,15 @@ export function Underline(
         ('children' in propsOrChildren || 'tagName' in propsOrChildren)
     ) {
         const { children, tagName = 'u' } = propsOrChildren as NativeUnderlineProps;
-        if (tagName === 'ins') {
-            return <ins>{children}</ins>;
-        }
-        return <u>{children}</u>;
+        return {
+            type: tagName === 'ins' ? 'ins' : 'u',
+            props: { children },
+        };
     }
-    return <u>{propsOrChildren as NativeChildren}</u>;
+    return {
+        type: 'u',
+        props: { children: propsOrChildren as NativeChildren },
+    };
 }
 
 /**

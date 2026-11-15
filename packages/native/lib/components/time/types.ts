@@ -3,8 +3,8 @@
  * @module @teleframe/view/native/components/time/types
  */
 
-import type { TimeChildren } from '@native/tags/base';
-import type { TimeFormat } from '@native/tags/time';
+import type { TimeChildren } from '../../tags/base';
+import type { TimeFormat } from '../../tags/time';
 
 interface TimeBaseProps {
     /** Optional locale for fallback date/time string representation */

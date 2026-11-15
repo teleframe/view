@@ -3,7 +3,7 @@
  * @module @teleframe/view/native/components/mono/mono
  */
 
-import type { CodeChildren, TelegramNativeElement } from '@native/tags/base';
+import type { CodeChildren, TelegramNativeElement } from '../../tags/base';
 import type { NativeMonoProps } from './types';
 
 /**
@@ -19,9 +19,15 @@ export function Mono(propsOrChildren: NativeMonoProps | CodeChildren): TelegramN
         !Array.isArray(propsOrChildren) &&
         'children' in propsOrChildren
     ) {
-        return <mono>{(propsOrChildren as NativeMonoProps).children}</mono>;
+        return {
+            type: 'code',
+            props: { children: (propsOrChildren as NativeMonoProps).children },
+        };
     }
-    return <mono>{propsOrChildren as CodeChildren}</mono>;
+    return {
+        type: 'code',
+        props: { children: propsOrChildren as CodeChildren },
+    };
 }
 
 /**

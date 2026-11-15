@@ -3,8 +3,8 @@
  * @module @teleframe/view/native/components/progress/progress
  */
 
-import { normalizeInteger } from '@native/sanitizer';
-import type { TelegramNativeElement } from '@native/tags/base';
+import { normalizeInteger } from '../../sanitizer';
+import type { TelegramNativeElement } from '../../tags/base';
 import { STYLE_PRESETS } from './presets';
 import type { ExtendedProgressProps } from './types';
 
@@ -76,7 +76,10 @@ export const ProgressBar = ({
     const output = `${prefix}${bar}${suffix}${percentLabel}${valueLabel}`;
 
     if (mono) {
-        return <code>{output}</code>;
+        return {
+            type: 'code',
+            props: { children: output },
+        };
     }
 
     return output;

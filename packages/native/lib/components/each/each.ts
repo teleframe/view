@@ -3,7 +3,7 @@
  * @module @teleframe/view/native/components/each/each
  */
 
-import type { NativeChildren, TelegramNativeElement } from '@native/tags/base';
+import type { NativeChildren, TelegramNativeElement } from '../../tags/base';
 import { Br } from '../br';
 import { Li, Ol, Ul } from '../list';
 import type { NativeEachProps } from './types';
@@ -34,14 +34,14 @@ import type { NativeEachProps } from './types';
  * </Each>
  * ```
  */
-export const Each = <T = any,>(props: NativeEachProps<T>): TelegramNativeElement | any => {
+export const Each = <T = any>(props: NativeEachProps<T>): TelegramNativeElement | any => {
     const {
         items,
         as = 'plain',
         render,
         children,
         fallback = null,
-        separator = <Br />,
+        separator = Br(),
         marker,
         start = 1,
         spacing = 1,
@@ -63,34 +63,35 @@ export const Each = <T = any,>(props: NativeEachProps<T>): TelegramNativeElement
         const listChildren = items.map((item, index) => {
             const content = renderFn(item, index);
             const itemMarker = typeof marker === 'function' ? marker(index, item) : marker;
-            return (
-                <Li key={index} marker={itemMarker}>
-                    {content}
-                </Li>
-            );
+            return Li({
+                key: index,
+                marker: itemMarker,
+                children: content,
+            });
         });
-        return (
-            <Ul bullet={typeof marker === 'string' ? marker : undefined} spacing={spacing}>
-                {listChildren}
-            </Ul>
-        );
+        return Ul({
+            bullet: typeof marker === 'string' ? marker : undefined,
+            spacing,
+            children: listChildren,
+        });
     }
 
     if (as === 'ol') {
         const listChildren = items.map((item, index) => {
             const content = renderFn(item, index);
             const itemMarker = typeof marker === 'function' ? marker(index, item) : marker;
-            return (
-                <Li key={index} marker={itemMarker}>
-                    {content}
-                </Li>
-            );
+            return Li({
+                key: index,
+                marker: itemMarker,
+                children: content,
+            });
         });
-        return (
-            <Ol start={start} numberStyle={numberStyle} spacing={spacing}>
-                {listChildren}
-            </Ol>
-        );
+        return Ol({
+            start,
+            numberStyle,
+            spacing,
+            children: listChildren,
+        });
     }
 
     const result: any[] = [];
@@ -112,7 +113,7 @@ export const Each = <T = any,>(props: NativeEachProps<T>): TelegramNativeElement
 /**
  * Functional helper for collection iteration without JSX.
  */
-export const each = <T = any,>(props: NativeEachProps<T>): TelegramNativeElement | any =>
+export const each = <T = any>(props: NativeEachProps<T>): TelegramNativeElement | any =>
     Each(props);
 
 export default Each;

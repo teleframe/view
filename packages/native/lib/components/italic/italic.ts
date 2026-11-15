@@ -3,7 +3,7 @@
  * @module @teleframe/view/native/components/italic/italic
  */
 
-import type { NativeChildren, TelegramNativeElement } from '@native/tags/base';
+import type { NativeChildren, TelegramNativeElement } from '../../tags/base';
 import type { NativeItalicProps } from './types';
 
 /**
@@ -20,12 +20,15 @@ export function Italic(propsOrChildren: NativeItalicProps | NativeChildren): Tel
         ('children' in propsOrChildren || 'tagName' in propsOrChildren)
     ) {
         const { children, tagName = 'i' } = propsOrChildren as NativeItalicProps;
-        if (tagName === 'em') {
-            return <em>{children}</em>;
-        }
-        return <i>{children}</i>;
+        return {
+            type: tagName === 'em' ? 'em' : 'i',
+            props: { children },
+        };
     }
-    return <i>{propsOrChildren as NativeChildren}</i>;
+    return {
+        type: 'i',
+        props: { children: propsOrChildren as NativeChildren },
+    };
 }
 
 /**
