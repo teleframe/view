@@ -83,9 +83,51 @@ export interface RenderResult {
     entities: MessageEntity[];
 }
 
+const FORMATTING_TYPES = new Set(['bold', 'italic', 'underline', 'strikethrough', 'spoiler']);
+const CODE_TYPES = new Set(['code', 'pre']);
+const LINK_TYPES = new Set(['text_link', 'text_mention']);
+const BLOCKQUOTE_TYPES = new Set(['blockquote', 'expandable_blockquote']);
+const ATOMIC_TYPES = new Set(['custom_emoji', 'date_time']);
+
+/**
+ * Validates whether childType can be legally nested inside parentType according to
+ * the Telegram Bot API message entity formatting rules.
+ */
+export const isEntityNestingAllowed = (parentType: string, childType: string): boolean => {
+    // 1. Leaf / atomic entities cannot contain any nested entities
+    if (ATOMIC_TYPES.has(parentType)) {
+        return false;
+    }
+
+    // 2. Preformatted code entities cannot contain any nested entities in MessageEntity output
+    if (CODE_TYPES.has(parentType)) {
+        return false;
+    }
+
+    // 3. Links and mentions can only contain inline formatting entities
+    if (LINK_TYPES.has(parentType)) {
+        return FORMATTING_TYPES.has(childType);
+    }
+
+    // 4. Blockquotes can contain formatting, code, links, and atomic entities, but cannot contain nested blockquotes
+    if (BLOCKQUOTE_TYPES.has(parentType)) {
+        return !BLOCKQUOTE_TYPES.has(childType);
+    }
+
+    // 5. Formatting entities can contain other formatting, links, and atomic entities, but cannot contain code, pre, or blockquotes
+    if (FORMATTING_TYPES.has(parentType)) {
+        if (CODE_TYPES.has(childType) || BLOCKQUOTE_TYPES.has(childType)) {
+            return false;
+        }
+        return true;
+    }
+
+    return true;
+};
+
 /**
  * Validates that all entities are either strictly nested or disjoint,
- * and never overlap/intersect across boundaries.
+ * and never overlap/intersect across boundaries or violate type compatibility.
  */
 export const validateEntitiesOverlap = (entities: MessageEntity[]): void => {
     for (let i = 0; i < entities.length; i++) {
@@ -106,6 +148,14 @@ export const validateEntitiesOverlap = (entities: MessageEntity[]): void => {
             if (bEnd > aEnd) {
                 throw new Error(
                     `[Telegram Markup] Entity boundary violation: Entities of type "${a.type}" [${a.offset}..${aEnd}] and "${b.type}" [${b.offset}..${bEnd}] intersect invalidly. In Telegram Bot API, entities must be strictly nested or disjoint.`,
+                );
+            }
+
+            // In Telegram Bot API, when b is contained within a (or identical ranges),
+            // verify their type compatibility.
+            if (!isEntityNestingAllowed(a.type, b.type)) {
+                throw new Error(
+                    `[Telegram Markup] Entity nesting violation: Entity of type "${b.type}" [${b.offset}..${bEnd}] cannot be nested inside entity of type "${a.type}" [${a.offset}..${aEnd}]. Per Telegram Bot API formatting rules, this combination is incompatible.`,
                 );
             }
         }

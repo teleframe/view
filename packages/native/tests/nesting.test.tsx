@@ -9,6 +9,7 @@ import {
     Code,
     CodeBlock,
     Emoji,
+    isEntityNestingAllowed,
     Italic,
     Link,
     Pre,
@@ -20,6 +21,7 @@ import {
     Time,
     Underline,
     User,
+    validateEntitiesOverlap,
 } from '../lib';
 
 describe('Telegram Nesting Validation (Runtime)', () => {
@@ -231,6 +233,238 @@ describe('Telegram Nesting Validation (Runtime)', () => {
             expect(() => renderToString(tree)).toThrow(TelegramNestingError);
             expect(() => render(tree)).toThrow(TelegramNestingError);
         }
+    });
+
+    test('throws TelegramNestingError when nesting Code, Pre, or Blockquote inside Bold for both render and renderToString', () => {
+        // 1. Bold > Code
+        const boldWithCode = <Bold>{(<Code>const x = 1;</Code>) as any}</Bold>;
+        expect(() => renderToString(boldWithCode)).toThrow(TelegramNestingError);
+        expect(() => render(boldWithCode)).toThrow(TelegramNestingError);
+
+        try {
+            render(boldWithCode);
+        } catch (err: any) {
+            expect(err).toBeInstanceOf(TelegramNestingError);
+            expect(err.parentTag).toBe('b');
+            expect(err.childTag).toBe('code');
+            expect(err.path).toBe('b > code');
+        }
+
+        // 2. Bold > Pre
+        const boldWithPre = <Bold>{(<Pre>preformatted block</Pre>) as any}</Bold>;
+        expect(() => renderToString(boldWithPre)).toThrow(TelegramNestingError);
+        expect(() => render(boldWithPre)).toThrow(TelegramNestingError);
+
+        try {
+            render(boldWithPre);
+        } catch (err: any) {
+            expect(err).toBeInstanceOf(TelegramNestingError);
+            expect(err.parentTag).toBe('b');
+            expect(err.childTag).toBe('pre');
+            expect(err.path).toBe('b > pre');
+        }
+
+        // 3. Bold > Blockquote
+        const boldWithBlockquote = <Bold>{(<Blockquote>quote</Blockquote>) as any}</Bold>;
+        expect(() => renderToString(boldWithBlockquote)).toThrow(TelegramNestingError);
+        expect(() => render(boldWithBlockquote)).toThrow(TelegramNestingError);
+
+        try {
+            render(boldWithBlockquote);
+        } catch (err: any) {
+            expect(err).toBeInstanceOf(TelegramNestingError);
+            expect(err.parentTag).toBe('b');
+            expect(err.childTag).toBe('blockquote');
+            expect(err.path).toBe('b > blockquote');
+        }
+    });
+
+    test('throws TelegramNestingError for Code, Pre, and Blockquote inside all formatting components', () => {
+        const formattingParents: Array<{ name: string; wrap: (child: any) => any }> = [
+            { name: 'Italic', wrap: (child) => <Italic>{child}</Italic> },
+            { name: 'Underline', wrap: (child) => <Underline>{child}</Underline> },
+            { name: 'Strike', wrap: (child) => <Strike>{child}</Strike> },
+            { name: 'Spoiler', wrap: (child) => <Spoiler>{child}</Spoiler> },
+        ];
+
+        const forbiddenChildren = [
+            <Code>inline code</Code>,
+            <Pre>code block</Pre>,
+            <CodeBlock language="ts">const a = 1;</CodeBlock>,
+            <Blockquote>block quotation</Blockquote>,
+        ];
+
+        for (const parent of formattingParents) {
+            for (const child of forbiddenChildren) {
+                const tree = parent.wrap(child);
+                expect(() => renderToString(tree)).toThrow(TelegramNestingError);
+                expect(() => render(tree)).toThrow(TelegramNestingError);
+            }
+        }
+    });
+
+    test('throws TelegramNestingError for deep transitive nesting of Code or Pre inside formatting chains', () => {
+        // Bold > Italic > Code
+        const deepCode = (
+            <Bold>
+                <Italic>{(<Code>nested code</Code>) as any}</Italic>
+            </Bold>
+        );
+        expect(() => renderToString(deepCode)).toThrow(TelegramNestingError);
+        expect(() => render(deepCode)).toThrow(TelegramNestingError);
+        try {
+            render(deepCode);
+        } catch (err: any) {
+            expect(err).toBeInstanceOf(TelegramNestingError);
+            expect(err.parentTag).toBe('i');
+            expect(err.childTag).toBe('code');
+            expect(err.path).toBe('b > i > code');
+        }
+
+        // Spoiler > Underline > Pre
+        const deepPre = (
+            <Spoiler>
+                <Underline>{(<Pre>nested pre</Pre>) as any}</Underline>
+            </Spoiler>
+        );
+        expect(() => renderToString(deepPre)).toThrow(TelegramNestingError);
+        expect(() => render(deepPre)).toThrow(TelegramNestingError);
+        try {
+            render(deepPre);
+        } catch (err: any) {
+            expect(err).toBeInstanceOf(TelegramNestingError);
+            expect(err.parentTag).toBe('u');
+            expect(err.childTag).toBe('pre');
+            expect(err.path).toBe('tg-spoiler > u > pre');
+        }
+
+        // Blockquote > Bold > Code (Blockquote allows Bold, but Bold cannot contain Code)
+        const bqBoldCode = (
+            <Blockquote>
+                <Bold>{(<Code>quote code</Code>) as any}</Bold>
+            </Blockquote>
+        );
+        expect(() => renderToString(bqBoldCode)).toThrow(TelegramNestingError);
+        expect(() => render(bqBoldCode)).toThrow(TelegramNestingError);
+        try {
+            render(bqBoldCode);
+        } catch (err: any) {
+            expect(err).toBeInstanceOf(TelegramNestingError);
+            expect(err.parentTag).toBe('b');
+            expect(err.childTag).toBe('code');
+            expect(err.path).toBe('blockquote > b > code');
+        }
+
+        // Link > Bold > Code (Both Link and Bold forbid Code)
+        const linkBoldCode = (
+            <Link href="https://example.com">
+                <Bold>{(<Code>link code</Code>) as any}</Bold>
+            </Link>
+        );
+        expect(() => renderToString(linkBoldCode)).toThrow(TelegramNestingError);
+        expect(() => render(linkBoldCode)).toThrow(TelegramNestingError);
+    });
+
+    test('throws TelegramNestingError when nesting Code or Pre inside intrinsic formatting tags', () => {
+        const intrinsicCombinations = [
+            <b>
+                <code>text</code>
+            </b>,
+            <b>
+                <pre>text</pre>
+            </b>,
+            <strong>
+                <code>text</code>
+            </strong>,
+            <em>
+                <code>text</code>
+            </em>,
+            <ins>
+                <code>text</code>
+            </ins>,
+            <del>
+                <code>text</code>
+            </del>,
+            <span class="tg-spoiler">
+                <code>text</code>
+            </span>,
+            <b>
+                <blockquote>text</blockquote>
+            </b>,
+        ];
+
+        for (const tree of intrinsicCombinations) {
+            expect(() => renderToString(tree)).toThrow(TelegramNestingError);
+            expect(() => render(tree)).toThrow(TelegramNestingError);
+        }
+    });
+
+    test('validates message entity pairing compatibility directly via validateEntitiesOverlap and isEntityNestingAllowed', () => {
+        // isEntityNestingAllowed checks
+        expect(isEntityNestingAllowed('bold', 'italic')).toBe(true);
+        expect(isEntityNestingAllowed('bold', 'text_link')).toBe(true);
+        expect(isEntityNestingAllowed('text_link', 'bold')).toBe(true);
+        expect(isEntityNestingAllowed('blockquote', 'code')).toBe(true);
+        expect(isEntityNestingAllowed('blockquote', 'pre')).toBe(true);
+        expect(isEntityNestingAllowed('blockquote', 'bold')).toBe(true);
+        expect(isEntityNestingAllowed('bold', 'custom_emoji')).toBe(true);
+        expect(isEntityNestingAllowed('bold', 'date_time')).toBe(true);
+
+        // Forbidden pairings
+        expect(isEntityNestingAllowed('bold', 'code')).toBe(false);
+        expect(isEntityNestingAllowed('bold', 'pre')).toBe(false);
+        expect(isEntityNestingAllowed('bold', 'blockquote')).toBe(false);
+        expect(isEntityNestingAllowed('code', 'bold')).toBe(false);
+        expect(isEntityNestingAllowed('pre', 'bold')).toBe(false);
+        expect(isEntityNestingAllowed('text_link', 'code')).toBe(false);
+        expect(isEntityNestingAllowed('text_link', 'pre')).toBe(false);
+        expect(isEntityNestingAllowed('text_link', 'date_time')).toBe(false);
+        expect(isEntityNestingAllowed('text_link', 'custom_emoji')).toBe(false);
+        expect(isEntityNestingAllowed('text_link', 'text_link')).toBe(false);
+        expect(isEntityNestingAllowed('blockquote', 'blockquote')).toBe(false);
+        expect(isEntityNestingAllowed('date_time', 'bold')).toBe(false);
+        expect(isEntityNestingAllowed('custom_emoji', 'bold')).toBe(false);
+
+        // validateEntitiesOverlap directly throws on incompatible overlapping entities
+        const invalidEntityPairs = [
+            [
+                { type: 'bold', offset: 0, length: 5 },
+                { type: 'code', offset: 0, length: 5 },
+            ],
+            [
+                { type: 'code', offset: 0, length: 5 },
+                { type: 'bold', offset: 0, length: 5 },
+            ],
+            [
+                { type: 'bold', offset: 0, length: 10 },
+                { type: 'pre', offset: 2, length: 4 },
+            ],
+            [
+                { type: 'bold', offset: 0, length: 10 },
+                { type: 'blockquote', offset: 0, length: 10 },
+            ],
+            [
+                { type: 'text_link', offset: 0, length: 8, url: 'https://example.com' },
+                {
+                    type: 'date_time',
+                    offset: 0,
+                    length: 8,
+                    unix_time: 123456,
+                    date_time_format: 'r',
+                },
+            ],
+        ];
+
+        for (const entities of invalidEntityPairs) {
+            expect(() => validateEntitiesOverlap(entities as any)).toThrow();
+        }
+
+        // Valid entities do not throw
+        const validEntities = [
+            { type: 'bold', offset: 0, length: 10 },
+            { type: 'italic', offset: 2, length: 5 },
+        ];
+        expect(() => validateEntitiesOverlap(validEntities as any)).not.toThrow();
     });
 
     test('throws TelegramNestingError for every forbidden child inside inline Code', () => {
