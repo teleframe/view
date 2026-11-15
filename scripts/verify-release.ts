@@ -2,7 +2,7 @@
 /**
  * @fileoverview Automated Release Verification Pipeline
  * Runs type checks, test suite, production build, and verifies npm tarball
- * packaging, clean installation, and ESM runtime imports.
+ * packaging, clean installation, and ESM runtime imports for @teleframe/view.
  */
 
 import { $ } from 'bun';
@@ -32,10 +32,11 @@ async function verifyRelease() {
         await $`bun fmt --check`.quiet();
     });
 
-    // 2. TypeScript Static Analysis (Root & Example)
-    await runStep('Type checking workspace (tsc --noEmit)', async () => {
+    // 2. TypeScript Static Analysis (Root, Packages & Example)
+    await runStep('Type checking workspace (tsc & deno check)', async () => {
         await $`bun run check`.quiet();
         await $`bun run --cwd example check`.quiet();
+        await $`deno task check`.quiet();
     });
 
     // 3. Unit & Integration Test Suite
@@ -48,50 +49,8 @@ async function verifyRelease() {
         await $`bun run build`.quiet();
     });
 
-    // 5. Package & Test @telegram-markup/native tarball
-    await runStep('Verifying @telegram-markup/native npm tarball installation', async () => {
-        const pkgDir = `${ROOT_DIR}/packages/native`;
-        const packRes = await $`npm pack`.cwd(pkgDir).quiet().text();
-        const tarballName = packRes.trim().split('\n').pop()?.trim();
-        if (!tarballName) throw new Error('Could not determine tarball name from npm pack');
-        const tarballPath = `${pkgDir}/${tarballName}`;
-
-        const tmpDir = `/tmp/test-pkg-install-${Date.now()}`;
-        await $`mkdir -p ${tmpDir}`.quiet();
-
-        try {
-            await $`npm init -y`.cwd(tmpDir).quiet();
-            await $`npm install ${tarballPath}`.cwd(tmpDir).quiet();
-
-            // Run verification script in Node.js
-            const testScript = `
-import { Bold, Italic, Link, renderToString, render, escapeHtml, bold, italic } from "@telegram-markup/native";
-
-// 1. JSX / component rendering
-const html = renderToString(Bold({ children: ["Hello ", Italic({ children: "World" })] }));
-if (html !== "<b>Hello <i>World</i></b>") throw new Error("Unexpected HTML output: " + html);
-
-// 2. Functional builder
-const funcHtml = renderToString(bold(["Text ", italic("italic")]));
-if (funcHtml !== "<b>Text <i>italic</i></b>") throw new Error("Unexpected functional HTML: " + funcHtml);
-
-// 3. Entity compilation
-const { text, entities } = render(bold(["Hello ", italic("World")]));
-if (text !== "Hello World" || entities.length !== 2) throw new Error("Unexpected entities: " + JSON.stringify(entities));
-
-// 4. Sanitizer
-if (escapeHtml("<script>") !== "&lt;script&gt;") throw new Error("Unexpected escapeHtml output");
-`;
-            await Bun.write(`${tmpDir}/test.mjs`, testScript);
-            await $`node test.mjs`.cwd(tmpDir).quiet();
-        } finally {
-            await $`rm -rf ${tmpDir}`.quiet();
-            await $`rm -f ${tarballPath}`.quiet();
-        }
-    });
-
-    // 6. Package & Test root telegram-markup umbrella tarball
-    await runStep('Verifying telegram-markup (root) npm tarball installation', async () => {
+    // 5. Package & Test @teleframe/view npm tarball (root & subpaths)
+    await runStep('Verifying @teleframe/view npm tarball installation', async () => {
         const packRes = await $`npm pack`.cwd(ROOT_DIR).quiet().text();
         const tarballName = packRes.trim().split('\n').pop()?.trim();
         if (!tarballName) throw new Error('Could not determine root tarball name from npm pack');
@@ -105,14 +64,26 @@ if (escapeHtml("<script>") !== "&lt;script&gt;") throw new Error("Unexpected esc
             await $`npm install ${tarballPath}`.cwd(tmpDir).quiet();
 
             const testScript = `
-import { Bold, renderToString } from "telegram-markup";
-import { bold, render } from "telegram-markup/native";
+import { Bold, Italic, renderToString, Native } from "@teleframe/view";
+import { bold, italic, render } from "@teleframe/view/native";
+import { jsx } from "@teleframe/view/jsx-runtime";
 
-const html = renderToString(Bold({ children: "Root package works!" }));
-if (html !== "<b>Root package works!</b>") throw new Error("Unexpected root HTML: " + html);
+// 1. Root JSX component rendering
+const html = renderToString(Bold({ children: ["Hello ", Italic({ children: "World" })] }));
+if (html !== "<b>Hello <i>World</i></b>") throw new Error("Unexpected root HTML: " + html);
 
-const { text, entities } = render(bold("Subpath native works!"));
-if (text !== "Subpath native works!" || entities.length !== 1) throw new Error("Unexpected native entities: " + JSON.stringify(entities));
+// 2. Namespaced Native export
+const nsHtml = Native.renderToString(Native.bold("Namespaced works!"));
+if (nsHtml !== "<b>Namespaced works!</b>") throw new Error("Unexpected Native HTML: " + nsHtml);
+
+// 3. Subpath native functional builder & entity compilation
+const { text, entities } = render(bold(["Subpath ", italic("native"), " works!"]));
+if (text !== "Subpath native works!" || entities.length !== 2) {
+    throw new Error("Unexpected native entities: " + JSON.stringify(entities));
+}
+
+// 4. Subpath jsx-runtime
+if (typeof jsx !== "function") throw new Error("jsx runtime export missing");
 `;
             await Bun.write(`${tmpDir}/test.mjs`, testScript);
             await $`node test.mjs`.cwd(tmpDir).quiet();
@@ -120,6 +91,11 @@ if (text !== "Subpath native works!" || entities.length !== 1) throw new Error("
             await $`rm -rf ${tmpDir}`.quiet();
             await $`rm -f ${tarballPath}`.quiet();
         }
+    });
+
+    // 6. Verify Deno execution & test suite
+    await runStep('Verifying Deno runtime compatibility (deno test)', async () => {
+        await $`deno test tests/deno.test.tsx`.quiet();
     });
 
     console.log('\n===========================================');
