@@ -1,0 +1,52 @@
+{
+    "$schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
+    "name": "@teleframe/view",
+    "version": "0.1.0",
+    "unstable": ["sloppy-imports"],
+    "compilerOptions": {
+        "jsx": "react-jsx",
+        "jsxImportSource": "@teleframe/view"
+    },
+    "publish": {
+        "include": ["src", "packages/native/lib", "README.md", "LICENSE"]
+    },
+    "imports": {
+        "@native": "./packages/native/lib/index.ts",
+        "@native/": "./packages/native/lib/",
+        "@native/jsx-runtime": "./packages/native/lib/jsx-runtime.ts",
+        "@native/jsx-dev-runtime": "./packages/native/lib/jsx-dev-runtime.ts",
+        "@components": "./packages/native/lib/components/index.ts",
+        "@components/": "./packages/native/lib/components/",
+        "@tags": "./packages/native/lib/tags/index.ts",
+        "@tags/": "./packages/native/lib/tags/",
+        "@languages": "./packages/native/lib/tags/languages.ts",
+        "@sanitizer": "./packages/native/lib/sanitizer/index.ts",
+        "@sanitizer/": "./packages/native/lib/sanitizer/",
+        "@entities": "./packages/native/lib/entities/index.ts",
+        "@entities/": "./packages/native/lib/entities/",
+        "@validation": "./packages/native/lib/validation/index.ts",
+        "@validation/": "./packages/native/lib/validation/",
+        "@view/native": "./packages/native/lib/index.ts",
+        "@view/native/": "./packages/native/lib/",
+        "@teleframe/view": "./src/index.ts",
+        "@teleframe/view/native": "./packages/native/lib/index.ts",
+        "@teleframe/view/jsx-runtime": "./src/jsx-runtime.ts",
+        "@teleframe/view/jsx-dev-runtime": "./src/jsx-dev-runtime.ts",
+        "@teleframe/view/native/jsx-runtime": "./packages/native/lib/jsx-runtime.ts",
+        "@teleframe/view/native/jsx-dev-runtime": "./packages/native/lib/jsx-dev-runtime.ts"
+    },
+    "exports": {
+        ".": "./src/index.ts",
+        "./native": "./packages/native/lib/index.ts",
+        "./jsx-runtime": "./src/jsx-runtime.ts",
+        "./jsx-dev-runtime": "./src/jsx-dev-runtime.ts",
+        "./native/jsx-runtime": "./packages/native/lib/jsx-runtime.ts",
+        "./native/jsx-dev-runtime": "./packages/native/lib/jsx-dev-runtime.ts"
+    },
+    "tasks": {
+        "build": "bun run build",
+        "check": "deno check src/index.ts src/jsx-runtime.ts packages/native/lib/index.ts",
+        "test": "deno test tests/deno.test.tsx",
+        "verify": "bun scripts/verify-release.ts"
+    }
+}

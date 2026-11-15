@@ -1,0 +1,50 @@
+amends "package://github.com/jdx/hk/releases/download/v2.12.0/hk@2.12.0#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v2.12.0/hk@2.12.0#/Builtins.pkl"
+
+steps {
+    ["no-commit-to-branch"] = (Builtins.no_commit_to_branch) {
+        check = "hk util no-commit-to-branch --branch main --branch master"
+    }
+    ["check-branch-name"] = new Step {
+        check = "bun scripts/check-branch.ts"
+    }
+    ["check-merge-conflict"] = Builtins.check_merge_conflict
+    ["check-added-large-files"] = Builtins.check_added_large_files
+    ["detect-private-key"] = Builtins.detect_private_key
+    ["bun-fmt"] = new Step {
+        check = "bun fmt --check"
+        fix = "bun fmt"
+    }
+    ["bun-check"] = new Step {
+        check = "bun run check"
+    }
+    ["deno-check"] = new Step {
+        check = "deno task check"
+    }
+}
+
+hooks {
+    ["commit-msg"] {
+        steps {
+            ["check-conventional-commit"] = Builtins.check_conventional_commit
+        }
+    }
+
+    ["pre-commit"] {
+        steps = (steps)
+    }
+
+    ["pre-push"] {
+        steps {
+            ["no-push-to-main"] = (Builtins.no_commit_to_branch) {
+                check = "hk util no-commit-to-branch --branch main --branch master"
+            }
+            ["bun-test"] = new Step {
+                check = "bun test"
+            }
+            ["deno-test"] = new Step {
+                check = "deno test tests/deno.test.tsx"
+            }
+        }
+    }
+}

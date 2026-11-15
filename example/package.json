@@ -1,0 +1,21 @@
+{
+    "name": "@teleframe/view-example",
+    "version": "0.1.0",
+    "module": "src/index.ts",
+    "type": "module",
+    "private": true,
+    "scripts": {
+        "start": "bun src/index.ts",
+        "dev": "bun --watch src/index.ts",
+        "check": "tsc --noEmit"
+    },
+    "devDependencies": {
+        "@types/bun": "catalog:",
+        "@types/react": "catalog:",
+        "typescript": "catalog:"
+    },
+    "dependencies": {
+        "@teleframe/view": "workspace:*",
+        "grammy": "catalog:examples"
+    }
+}

@@ -1,30 +1,54 @@
 {
-  "compilerOptions": {
-    // Environment setup & latest features
-    "lib": ["ESNext"],
-    "target": "ESNext",
-    "module": "Preserve",
-    "moduleDetection": "force",
-    "jsx": "react-jsx",
-    "allowJs": true,
-    "types": ["bun"],
+    "$schema": "https://json.schemastore.org/tsconfig",
+    "compilerOptions": {
+        // Environment setup & latest features
+        "lib": ["ESNext"],
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "jsx": "react-jsx",
+        "jsxImportSource": "@teleframe/view",
+        "types": ["bun"],
+        "allowJs": true,
 
-    // Bundler mode
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
-    "noEmit": true,
+        // Package, workspace, and module aliases
+        "paths": {
+            "@native": ["./packages/native/lib/index.ts"],
+            "@native/*": ["./packages/native/lib/*"],
+            "@components": ["./packages/native/lib/components/index.ts"],
+            "@components/*": ["./packages/native/lib/components/*"],
+            "@tags": ["./packages/native/lib/tags/index.ts"],
+            "@tags/*": ["./packages/native/lib/tags/*"],
+            "@languages": ["./packages/native/lib/tags/languages.ts"],
+            "@sanitizer": ["./packages/native/lib/sanitizer/index.ts"],
+            "@sanitizer/*": ["./packages/native/lib/sanitizer/*"],
+            "@entities": ["./packages/native/lib/entities/index.ts"],
+            "@entities/*": ["./packages/native/lib/entities/*"],
+            "@validation": ["./packages/native/lib/validation/index.ts"],
+            "@validation/*": ["./packages/native/lib/validation/*"],
+            "@view/native": ["./packages/native/lib/index.ts"],
+            "@view/native/*": ["./packages/native/lib/*"],
+            "@teleframe/view": ["./src/index.ts"],
+            "@teleframe/view/native": ["./packages/native/lib/index.ts"],
+            "@teleframe/view/native/*": ["./packages/native/lib/*"],
+            "@teleframe/view/jsx-runtime": ["./src/jsx-runtime.ts"],
+            "@teleframe/view/jsx-dev-runtime": ["./src/jsx-dev-runtime.ts"],
+            "@teleframe/view/native/jsx-runtime": ["./packages/native/lib/jsx-runtime.ts"],
+            "@teleframe/view/native/jsx-dev-runtime": ["./packages/native/lib/jsx-dev-runtime.ts"]
+        },
 
-    // Best practices
-    "strict": true,
-    "skipLibCheck": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true,
+        // Type checking & best practices
+        "strict": true,
+        "skipLibCheck": true,
+        "isolatedModules": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitOverride": true,
+        "noUnusedLocals": false,
+        "noUnusedParameters": false,
 
-    // Some stricter flags (disabled by default)
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noPropertyAccessFromIndexSignature": false
-  }
+        // Editor / Bun runtime dev mode
+        "noEmit": true
+    },
+    "include": ["packages/**/*", "src/**/*"],
+    "exclude": ["node_modules", "dist"]
 }

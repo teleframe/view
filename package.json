@@ -1,12 +1,138 @@
 {
-  "name": "tg-murkup",
-  "module": "index.ts",
-  "type": "module",
-  "private": true,
-  "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^7"
-  }
+    "name": "@teleframe/view",
+    "version": "0.1.0",
+    "description": "Declarative JSX/TSX view engine for Telegram bots (Native Text, Rich Messages, HTML Widgets, Telegraph)",
+    "type": "module",
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "deno": "./dist/index.js",
+            "bun": "./dist/bun/index.js",
+            "import": "./dist/index.js",
+            "default": "./dist/index.js"
+        },
+        "./native": {
+            "types": "./dist/native/index.d.ts",
+            "deno": "./dist/native/index.js",
+            "bun": "./dist/bun/native/index.js",
+            "import": "./dist/native/index.js",
+            "default": "./dist/native/index.js"
+        },
+        "./native/jsx-runtime": {
+            "types": "./dist/native/jsx-runtime.d.ts",
+            "deno": "./dist/native/jsx-runtime.js",
+            "bun": "./dist/bun/native/jsx-runtime.js",
+            "import": "./dist/native/jsx-runtime.js",
+            "default": "./dist/native/jsx-runtime.js"
+        },
+        "./native/jsx-dev-runtime": {
+            "types": "./dist/native/jsx-dev-runtime.d.ts",
+            "deno": "./dist/native/jsx-dev-runtime.js",
+            "bun": "./dist/bun/native/jsx-dev-runtime.js",
+            "import": "./dist/native/jsx-dev-runtime.js",
+            "default": "./dist/native/jsx-dev-runtime.js"
+        },
+        "./jsx-runtime": {
+            "types": "./dist/jsx-runtime.d.ts",
+            "deno": "./dist/jsx-runtime.js",
+            "bun": "./dist/bun/jsx-runtime.js",
+            "import": "./dist/jsx-runtime.js",
+            "default": "./dist/jsx-runtime.js"
+        },
+        "./jsx-dev-runtime": {
+            "types": "./dist/jsx-dev-runtime.d.ts",
+            "deno": "./dist/jsx-dev-runtime.js",
+            "bun": "./dist/bun/jsx-dev-runtime.js",
+            "import": "./dist/jsx-dev-runtime.js",
+            "default": "./dist/jsx-dev-runtime.js"
+        }
+    },
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE"
+    ],
+    "scripts": {
+        "build": "bun build.ts --prod",
+        "build:dev": "bun build.ts --dev",
+        "build:watch": "bun --watch build.ts --dev --no-types",
+        "check": "tsc --noEmit",
+        "check:deno": "deno task check",
+        "fmt": "bun fmt",
+        "fmt:check": "bun fmt --check",
+        "hooks:check": "mise exec -- hk check --all",
+        "hooks:install": "mise exec -- hk install --mise",
+        "test": "bun test",
+        "test:deno": "deno test tests/deno.test.tsx",
+        "env:setup": "bun scripts/fnox.ts setup",
+        "env:status": "bun scripts/fnox.ts status",
+        "env:prod": "bun scripts/fnox.ts prod",
+        "fnox": "bun scripts/fnox.ts",
+        "example": "fnox exec -- bun --watch example/src/index.ts",
+        "example:native": "fnox exec -- bun --watch example/src/index.ts",
+        "benchmark": "bun example/src/benchmark.tsx",
+        "smoke:test": "fnox exec -- bun example/src/smoke-test.tsx",
+        "live:test": "fnox exec -- bun example/src/live-test.tsx",
+        "stress:test": "fnox exec -- bun example/src/live-test.tsx",
+        "verify:release": "bun scripts/verify-release.ts"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/teleframe/view.git"
+    },
+    "bugs": {
+        "url": "https://github.com/teleframe/view/issues"
+    },
+    "homepage": "https://github.com/teleframe/view#readme",
+    "keywords": [
+        "teleframe",
+        "teleframe-view",
+        "telegram",
+        "telegram-bot",
+        "jsx",
+        "tsx",
+        "grammy",
+        "rich-messages",
+        "widgets",
+        "html"
+    ],
+    "author": {
+        "name": "naylour",
+        "email": "naylour@tuta.io",
+        "url": "https://github.com/naylour"
+    },
+    "license": "MIT",
+    "publishConfig": {
+        "access": "public"
+    },
+    "workspaces": [
+        "packages/*",
+        "example"
+    ],
+    "devDependencies": {
+        "@types/bun": "latest",
+        "@types/react": "^19.3.0",
+        "typescript": "^6.0.3"
+    },
+    "peerDependencies": {
+        "typescript": ">=5.0.0"
+    },
+    "peerDependenciesMeta": {
+        "typescript": {
+            "optional": true
+        }
+    },
+    "catalog": {
+        "typescript": "^6.0.3",
+        "@types/bun": "latest",
+        "@types/react": "^19.3.0"
+    },
+    "catalogs": {
+        "examples": {
+            "grammy": "^1.35.0"
+        }
+    }
 }

@@ -1,0 +1,84 @@
+{
+    "name": "@view/native",
+    "version": "0.1.0",
+    "private": true,
+    "description": "Native Telegram Bot API formatting module for @teleframe/view",
+    "type": "module",
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "deno": "./dist/index.js",
+            "bun": "./dist/bun/index.js",
+            "import": "./dist/index.js",
+            "default": "./dist/index.js"
+        },
+        "./jsx-runtime": {
+            "types": "./dist/jsx-runtime.d.ts",
+            "deno": "./dist/jsx-runtime.js",
+            "bun": "./dist/bun/jsx-runtime.js",
+            "import": "./dist/jsx-runtime.js",
+            "default": "./dist/jsx-runtime.js"
+        },
+        "./jsx-dev-runtime": {
+            "types": "./dist/jsx-dev-runtime.d.ts",
+            "deno": "./dist/jsx-dev-runtime.js",
+            "bun": "./dist/bun/jsx-dev-runtime.js",
+            "import": "./dist/jsx-dev-runtime.js",
+            "default": "./dist/jsx-dev-runtime.js"
+        }
+    },
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE"
+    ],
+    "scripts": {
+        "build": "bun ../../build.ts",
+        "check": "tsc --noEmit",
+        "check:deno": "deno check lib/index.ts",
+        "test": "bun test"
+    },
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/teleframe/view.git",
+        "directory": "packages/native"
+    },
+    "bugs": {
+        "url": "https://github.com/teleframe/view/issues"
+    },
+    "homepage": "https://github.com/teleframe/view#readme",
+    "keywords": [
+        "telegram",
+        "telegram-bot",
+        "bot-api",
+        "entities",
+        "message-entity",
+        "grammy",
+        "jsx",
+        "tsx",
+        "markup",
+        "html"
+    ],
+    "author": {
+        "name": "naylour",
+        "email": "naylour@tuta.io",
+        "url": "https://github.com/naylour"
+    },
+    "devDependencies": {
+        "@types/bun": "latest",
+        "@types/react": "^19.3.0",
+        "typescript": "^6.0.3"
+    },
+    "peerDependencies": {
+        "typescript": ">=5.0.0"
+    },
+    "peerDependenciesMeta": {
+        "typescript": {
+            "optional": true
+        }
+    }
+}

@@ -1,0 +1,32 @@
+# Bun configuration file
+# https://bun.sh/docs/runtime/bunfig
+
+[fmt]
+# Maximum line width before wrapping
+printWidth = 100
+
+# Indentation: 4 spaces
+tabWidth = 4
+useTabs = false
+
+# Quote style: single quotes for JS/TS
+singleQuote = true
+jsxSingleQuote = false
+
+# Semicolons: enforce semicolons at the ends of statements
+semi = true
+
+# Trailing commas: multiline trailing commas
+trailingComma = "all"
+
+# Object literal bracket spacing: { foo }
+bracketSpacing = true
+
+# Arrow function parentheses: (x) => x
+arrowParens = "always"
+
+# Newlines: standard POSIX line feeds
+endOfLine = "lf"
+
+# Ignored paths and build artifacts
+ignorePatterns = ["dist/**", "node_modules/**", ".git/**", "bun.lock", "data/**"]
