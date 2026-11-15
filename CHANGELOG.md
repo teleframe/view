@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [0.2.2](https://github.com/teleframe/view/compare/v0.2.1...v0.2.2) (2026-11-15)
+
+
+### 🐛 Bug Fixes
+
+* **deno:** fix jsxImportSource mapping for JSR and make npm publish idempotent ([#6](https://github.com/teleframe/view/issues/6)) ([9fc461b](https://github.com/teleframe/view/commit/9fc461bd029599aedd8405d74bc096ef50244cb3))
+
 ## [0.2.1](https://github.com/teleframe/view/compare/v0.2.0...v0.2.1) (2026-11-15)
 
 
