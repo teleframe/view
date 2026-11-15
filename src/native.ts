@@ -3,4 +3,4 @@
  * @module @teleframe/view/native
  */
 
-export * from '@native';
+export * from '@view/native';

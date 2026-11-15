@@ -1,8 +1,8 @@
 {
-    "name": "@teleframe/view",
+    "name": "@view/native",
     "version": "0.1.0",
     "private": true,
-    "description": "Native HTML and MessageEntity formatting engine for Telegram bots",
+    "description": "Native Telegram Bot API formatting module for @teleframe/view",
     "type": "module",
     "main": "./dist/index.js",
     "module": "./dist/index.js",
