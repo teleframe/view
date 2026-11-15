@@ -9,6 +9,7 @@
  * - <code language="..."> or <pre language="..."> transformed into <pre><code class="language-...">...</code></pre>
  */
 
+import { TelegramSecurityError } from './sanitizer';
 import type { NativeChildren, TelegramNativeElement } from './tags/base';
 import { normalizeTimeFormat } from './tags/time';
 
@@ -32,7 +33,7 @@ export const jsx = (type: any, props: any, key?: any): TelegramNativeElement => 
         }
         const numId = Number(id);
         if (!Number.isSafeInteger(numId) || numId <= 0) {
-            throw new Error(
+            throw new TelegramSecurityError(
                 `[Telegram Markup] Invalid user ID: "${id}". Telegram user ID must be a positive integer.`,
             );
         }

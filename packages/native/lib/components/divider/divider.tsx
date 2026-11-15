@@ -3,6 +3,7 @@
  * @module @telegram-markup/native/components/divider/divider
  */
 
+import { normalizeInteger } from '../../sanitizer';
 import type { TelegramNativeElement } from '../../tags/base';
 import type { NativeDividerProps } from './types';
 
@@ -18,22 +19,23 @@ export function Divider(
 ): TelegramNativeElement {
     if (typeof propsOrChar === 'string' || propsOrChar === undefined) {
         const c = propsOrChar ?? '—';
-        const len = length ?? 20;
-        const line = c.repeat(Math.max(1, len));
+        const len = normalizeInteger(length, 20, 1, 4096);
+        const line = c.repeat(len);
         return <hr char={line} length={1} before={1} after={1} />;
     }
     const {
         char = '—',
-        length: len = 20,
+        length: rawLen = 20,
         prefix = '',
         suffix = '',
         before,
         after,
         spacing,
     } = propsOrChar;
-    const b = before ?? spacing ?? 1;
-    const a = after ?? spacing ?? 1;
-    const line = `${prefix}${char.repeat(Math.max(1, len))}${suffix}`;
+    const len = normalizeInteger(rawLen, 20, 1, 4096);
+    const b = normalizeInteger(before ?? spacing, 1, 0, 100);
+    const a = normalizeInteger(after ?? spacing, 1, 0, 100);
+    const line = `${prefix}${char.repeat(len)}${suffix}`;
 
     return <hr char={line} length={1} before={b} after={a} />;
 }

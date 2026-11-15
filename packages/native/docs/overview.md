@@ -2,7 +2,7 @@
 
 > **"A Message is a Page"**
 
-`@telegram-markup/native` is a declarative, compile-time type-safe markup framework that lets developers construct Telegram Bot API HTML messages using JSX/TSX components.
+`@telegram-markup/native` is a declarative TypeScript/JSX toolkit for constructing Telegram message text with `MessageEntity[]` or Telegram HTML.
 
 ---
 
@@ -54,6 +54,6 @@ const html = renderToString(<ProfileCard user={currentUser} orders={recentOrders
 ### Core Design Principles
 
 - **Automatic Sanitization**: All interpolated text is automatically sanitized for Telegram Bot API HTML (`&` $\rightarrow$ `&amp;`, `<` $\rightarrow$ `&lt;`, `>` $\rightarrow$ `&gt;`).
-- **Zero Runtime Dependencies**: The core JSX runtime and renderer have zero external dependencies, running efficiently on Bun, Node.js, Deno, and Cloudflare Workers.
+- **No Runtime Dependencies**: The package has no runtime dependencies. Bun and Node.js ESM imports are covered by the package release checks; other runtimes have not been verified as part of this package's release checks.
 - **Strict Typing**: Full IntelliSense support for intrinsic Telegram tags (`<b>`, `<code>`, `<tg-spoiler>`, `<tg-time>`, etc.) and high-level layout widgets.
-- **Client Resilience**: Built-in workarounds and formatting techniques designed specifically for Telegram Desktop, Android, and iOS clients.
+- **Telegram-Focused Validation**: Runtime checks enforce the implemented nesting rules before a result is returned.

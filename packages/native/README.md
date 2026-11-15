@@ -48,9 +48,9 @@ Telegram Bot message formatting has historically been notoriously brittle and er
 
 `@telegram-markup/native` solves this once and for all:
 
-1. **Direct `MessageEntity` Compiler (`render`)**: Compiles JSX directly into `{ text, entities }` in a single pass with exact UTF-16 offsets. Zero HTML parsing overhead on Telegram's side.
-2. **Sanitized HTML Serializer (`renderToString` / `renderHtml`)**: Produces 100% compliant Telegram HTML for `parse_mode: 'HTML'`.
-3. **Pre-flight Error Interception**: Validates nesting rules and character limits locally before sending network requests.
+1. **Direct `MessageEntity` Compiler (`render`)**: Compiles JSX into `{ text, entities }` with UTF-16 offsets, without producing or parsing HTML.
+2. **HTML Serializer (`renderToString` / `renderHtml`)**: Escapes ordinary text and emits supported Telegram HTML tags for `parse_mode: 'HTML'`.
+3. **Local Validation**: Rejects unsupported nesting during rendering. Message and caption length checks are opt-in through `validate: 'message'` or `validate: 'caption'`.
 4. **Dual Ergonomics**: Write in JSX (`<Bold>text</Bold>`) or in pure functional TypeScript (`bold('text')`), or mix both!
 
 ---
@@ -177,21 +177,21 @@ All components support:
 
 ### 1. Typography & Inline Styles
 
-| Component                                                    | Lowercase Helper                       | Underlying Tag                         | Description & Examples                                                 |
-| :----------------------------------------------------------- | :------------------------------------- | :------------------------------------- | :--------------------------------------------------------------------- |
-| `<Bold>`                                                     | `bold(text, tagName?)`                 | `<b>` / `<strong>`                     | Bold styling. Optional `tagName="strong"`.                             |
-| `<Italic>`                                                   | `italic(text, tagName?)`               | `<i>` / `<em>`                         | Italic styling. Optional `tagName="em"`.                               |
-| `<Underline>`                                                | `underline(text, tagName?)`            | `<u>` / `<ins>`                        | Underline styling. Optional `tagName="ins"`.                           |
-| `<Strike>` / `<Strikethrough>`                               | `strike(text, tagName?)`               | `<s>` / `<strike>` / `<del>`           | Strikethrough text styling.                                            |
-| `<Spoiler>`                                                  | `spoiler(text)`                        | `<tg-spoiler>`                         | Click-to-reveal spoiler block.                                         |
-| `<Code>` / `<Mono>`                                          | `code(text)` / `mono(text)`            | `<code>`                               | Inline monospace snippet. **Only plain text permitted inside**.        |
-| `<Pre language="...">`                                       | `pre(text, lang?)`                     | `<pre>`                                | Preformatted block.                                                    |
-| `<CodeBlock language="...">`                                 | `codeblock(code, lang?)`               | `<pre><code class="language-...">`     | Multi-line code block with syntax highlighting.                        |
-| `<Blockquote expandable>`                                    | `blockquote(children, expandable?)`    | `<blockquote>`                         | Standard or expandable block quotation.                                |
-| `<Link href="..." userId={...}>`                             | `link(hrefOrUserId, children)`         | `<a href="...">`                       | Hyperlink or user mention. Protocol must be whitelisted.               |
-| `<User id={...}>`                                            | `user(id, children)`                   | `<user id="...">` / `tg://user?id=...` | Telegram user profile mention (`text_mention` entity).                 |
-| `<Emoji id="...">`                                           | `emoji(id, fallback)`                  | `<tg-emoji emoji-id="...">`            | Telegram Premium custom emoji. Children must be a single emoji string. |
-| `<Time date={...} unix={...} format="..." relative weekday>` | `time(dateOrUnix, format?, fallback?)` | `<tg-time unix="..." format="...">`    | Bot API 9.0 formatted timestamp with live countdown and localization.  |
+| Component                                                    | Lowercase Helper                       | Underlying Tag                        | Description & Examples                                                                                 |
+| :----------------------------------------------------------- | :------------------------------------- | :------------------------------------ | :----------------------------------------------------------------------------------------------------- |
+| `<Bold>`                                                     | `bold(text, tagName?)`                 | `<b>` / `<strong>`                    | Bold styling. Optional `tagName="strong"`.                                                             |
+| `<Italic>`                                                   | `italic(text, tagName?)`               | `<i>` / `<em>`                        | Italic styling. Optional `tagName="em"`.                                                               |
+| `<Underline>`                                                | `underline(text, tagName?)`            | `<u>` / `<ins>`                       | Underline styling. Optional `tagName="ins"`.                                                           |
+| `<Strike>` / `<Strikethrough>`                               | `strike(text, tagName?)`               | `<s>` / `<strike>` / `<del>`          | Strikethrough text styling.                                                                            |
+| `<Spoiler>`                                                  | `spoiler(text)`                        | `<tg-spoiler>`                        | Click-to-reveal spoiler block.                                                                         |
+| `<Code>` / `<Mono>`                                          | `code(text)` / `mono(text)`            | `<code>`                              | Inline monospace snippet. **Only plain text permitted inside**.                                        |
+| `<Pre language="...">`                                       | `pre(text, lang?)`                     | `<pre>`                               | Preformatted block.                                                                                    |
+| `<CodeBlock language="...">`                                 | `codeblock(code, lang?)`               | `<pre><code class="language-...">`    | Multi-line code block with syntax highlighting.                                                        |
+| `<Blockquote expandable>`                                    | `blockquote(children, expandable?)`    | `<blockquote>`                        | Standard or expandable block quotation.                                                                |
+| `<Link href="...">` or `<Link userId={...}>`                 | `link(hrefOrUserId, children)`         | `<a href="...">` / `tg://user?id=...` | Hyperlink or user mention. `href` and `userId` are mutually exclusive.                                 |
+| `<User id={...}>`                                            | `user(id, children)`                   | `<a href="tg://user?id=...">`         | Telegram user profile mention (`text_mention` entity).                                                 |
+| `<Emoji id="...">`                                           | `emoji(id, fallback)`                  | `<tg-emoji emoji-id="...">`           | Custom emoji ID plus fallback text. The ID is checked for digits; the fallback glyph is not validated. |
+| `<Time date={...} unix={...} format="..." relative weekday>` | `time(dateOrUnix, format?, fallback?)` | `<tg-time unix="..." format="...">`   | Bot API 9.0 timestamp with client-side localized rendering when supported.                             |
 
 #### Time Formats & Aliases:
 
@@ -207,11 +207,11 @@ All components support:
 
 ### 2. Layout, Spacing & Dividers
 
-| Component                                     | Lowercase Helper                           | Props                                                                   | Output & Behavior                                                 |
-| :-------------------------------------------- | :----------------------------------------- | :---------------------------------------------------------------------- | :---------------------------------------------------------------- |
-| `<Br count={2} as="newline" />`               | `br(count?)`                               | `count?: number`, `as?: 'newline' \| 'space'`                           | Appends `\n` line breaks or spaces without messy string literals. |
-| `<Paragraph spacing={2}>` / `<P>`             | `paragraph(children, spacing?)` / `p(...)` | `spacing?: number`, `before?: number`                                   | Text block with automatic trailing line breaks (default: 2).      |
-| `<Divider char="━" length={20} />` / `<Hr />` | `divider(char?, len?)` / `hr(...)`         | `char?: string`, `length?: number`, `before?: number`, `after?: number` | Formatted horizontal rule. Auto-escapes special characters.       |
+| Component                                     | Lowercase Helper                           | Props                                                                   | Output & Behavior                                            |
+| :-------------------------------------------- | :----------------------------------------- | :---------------------------------------------------------------------- | :----------------------------------------------------------- |
+| `<Br count={2} as="newline" />`               | `br(count?)`                               | `count?: number`, `as?: 'newline' \| 'br'`                              | Appends newlines; HTML mode also supports `<br>` tags.       |
+| `<Paragraph spacing={2}>` / `<P>`             | `paragraph(children, spacing?)` / `p(...)` | `spacing?: number`, `before?: number`                                   | Text block with automatic trailing line breaks (default: 2). |
+| `<Divider char="━" length={20} />` / `<Hr />` | `divider(char?, len?)` / `hr(...)`         | `char?: string`, `length?: number`, `before?: number`, `after?: number` | Formatted horizontal rule. Auto-escapes special characters.  |
 
 ---
 
@@ -291,19 +291,19 @@ import { RawHtml } from '@telegram-markup/native';
 
 ## Strict Telegram Rules: What is ALLOWED vs What is FORBIDDEN
 
-Telegram Bot API enforces strict syntactic rules. Violating these rules causes messages to fail with `400 Bad Request`. `@telegram-markup/native` validates your tree locally before sending.
+Telegram Bot API enforces formatting rules. The package validates supported component nesting during rendering; length checks are opt-in, and `RawHtml` contents bypass structural validation.
 
 ### Nesting Rules Matrix
 
-| Outer Tag                                      | Can Contain Formatting (`<b>`, `<i>`, `<u>`, `<s>`)? | Can Contain Links (`<a>`, `<user>`)? | Can Contain Code (`<code>`, `<pre>`)? | Can Contain Blockquote? | Can Contain Emoji / Time? |
-| :--------------------------------------------- | :--------------------------------------------------: | :----------------------------------: | :-----------------------------------: | :---------------------: | :-----------------------: |
-| **`<b>`, `<i>`, `<u>`, `<s>`, `<tg-spoiler>`** |                        ✅ YES                        |                ✅ YES                |                ✅ YES                 |          ❌ NO          |          ✅ YES           |
-| **`<blockquote>`**                             |                        ✅ YES                        |                ✅ YES                |                ✅ YES                 |    ❌ **FORBIDDEN**     |          ✅ YES           |
-| **`<Link>`, `<User>`**                         |                        ✅ YES                        |           ❌ **FORBIDDEN**           |                ✅ YES                 |          ❌ NO          |          ✅ YES           |
-| **`<Code>`, `<Mono>`**                         |                   ❌ **FORBIDDEN**                   |           ❌ **FORBIDDEN**           |           ❌ **FORBIDDEN**            |          ❌ NO          |     ❌ **FORBIDDEN**      |
-| **`<Pre>`, `<CodeBlock>`**                     |                   ❌ **FORBIDDEN**                   |           ❌ **FORBIDDEN**           |    ⚠️ Only `<code>` with language     |          ❌ NO          |     ❌ **FORBIDDEN**      |
-| **`<Emoji>`**                                  |                   ❌ **FORBIDDEN**                   |           ❌ **FORBIDDEN**           |           ❌ **FORBIDDEN**            |          ❌ NO          |     ❌ **FORBIDDEN**      |
-| **`<Time>` fallback**                          |                   ❌ **FORBIDDEN**                   |           ❌ **FORBIDDEN**           |           ❌ **FORBIDDEN**            |          ❌ NO          |     ❌ **FORBIDDEN**      |
+| Parent entity                               | Formatting | Links / mentions | Code / pre | Blockquote | Emoji / time |
+| :------------------------------------------ | :--------: | :--------------: | :--------: | :--------: | :----------: |
+| Formatting (`b`, `i`, `u`, `s`, spoiler)    |     ✅     |        ✅        |     ❌     |     ❌     |      ✅      |
+| Blockquote                                  |     ✅     |        ✅        |     ✅     |     ❌     |      ✅      |
+| Link / mention (`a`, `user`)                |     ✅     |        ❌        |     ❌     |     ❌     |      ❌      |
+| Inline code (`code`)                        |     ❌     |        ❌        |     ❌     |     ❌     |      ❌      |
+| Atomic entity (`custom_emoji`, `date_time`) |     ❌     |        ❌        |     ❌     |     ❌     |      ❌      |
+
+`<pre>` contains plain text. For syntax highlighting, HTML may use `<pre><code class="language-ts">…</code></pre>`; the entity renderer represents that structure as one `pre` entity, not nested `pre` and `code` entities.
 
 ### Key Violations Explained:
 
@@ -339,8 +339,8 @@ Telegram Bot API enforces strict syntactic rules. Violating these rules causes m
 
 ### Compile-Time & Runtime Verification
 
-- **Compile-Time**: Types such as `CodeChildren`, `EmojiChildren`, and `TimeChildren` prevent illegal nesting directly in your IDE.
-- **Runtime**: `validateNesting(node)` traverses the virtual tree and throws descriptive `TelegramNestingError` before sending to Telegram.
+- **Compile-Time**: Child types catch some invalid structures in TypeScript, but do not model every nesting constraint.
+- **Runtime**: Rendering validates the resolved tree and throws descriptive `TelegramNestingError`. `RawHtml` contents are opaque to this check.
 
 ---
 
@@ -348,11 +348,12 @@ Telegram Bot API enforces strict syntactic rules. Violating these rules causes m
 
 Telegram Bot API enforces strict character count limits:
 
-| Message Type                                      | Maximum Length                    | Error Thrown on Overflow |
-| :------------------------------------------------ | :-------------------------------- | :----------------------- |
-| **Standard Message**                              | **4,096 characters**              | `TelegramLimitError`     |
-| **Media Caption** (photo, video, audio, document) | **1,024 characters**              | `TelegramLimitError`     |
-| **Minimum Length**                                | **1 character** (cannot be empty) | `TelegramLimitError`     |
+| Message Type                                      | Maximum Length       | Error Thrown on Overflow |
+| :------------------------------------------------ | :------------------- | :----------------------- |
+| **Standard Message**                              | **4,096 characters** | `TelegramLimitError`     |
+| **Media Caption** (photo, video, audio, document) | **1,024 characters** | `TelegramLimitError`     |
+| **Message minimum length**                        | **1 character**      | `TelegramLimitError`     |
+| **Caption minimum length**                        | **0 characters**     | —                        |
 
 ### How Limits Are Calculated: Telegram-Accurate Parsed Length
 
@@ -365,7 +366,7 @@ Telegram Bot API enforces strict character count limits:
 > - Link URLs (e.g. `<a href="https://example.com/very/long/url">label</a>`) **do not consume** message length limits — only the label text counts!
 > - HTML entity escapes (e.g. `&amp;`) count as **1 character** (`&`), not 5!
 >
-> When you pass `validate: 'message'` or `validate: 'caption'` to `renderToString()` or `render()`, the validation engine parses/strips tags and decodes entities before checking length. This guarantees that messages with long URLs or rich markup are **never falsely rejected**.
+> When you pass `validate: 'message'` or `validate: 'caption'` to `renderToString()` or `render()`, the package checks the resulting text length. HTML mode uses a lightweight tag/entity stripper for this calculation, not a full HTML parser. Use `RawHtml` only for trusted, well-formed Telegram HTML.
 
 ### Enabling Pre-flight Validation:
 
@@ -383,7 +384,7 @@ const html = renderToString(screen, { validate: 'message' });
 ```
 
 > [!NOTE]
-> `@telegram-markup/native` **never silently truncates** your messages (which could cut off links, code blocks, or critical information). It throws a `TelegramLimitError` detailing the exact length and excess characters.
+> The package never truncates output. Length validation is opt-in; when enabled, it throws `TelegramLimitError` with the measured length and excess characters.
 
 ---
 
@@ -415,7 +416,7 @@ const html = renderToString(screen, { validate: 'message' });
     >
     > - In **HTML mode** (`renderToString` / `renderHtml`), `RawHtml` is inserted directly as-is into the final string without escaping.
     > - In **Entity mode** (`render`), HTML tags are stripped via regex (`<[^>]*>`) to maintain plain-text stream integrity, but pre-encoded HTML entities (such as `&amp;` or `&quot;`) are **not decoded**.
-    > - Therefore, `RawHtml` is designed primarily for `parse_mode: 'HTML'`. For 100% identical cross-mode rendering, prefer native JSX components (`<Bold>`, `<Italic>`, `<Link>`, etc.) or zero-JSX functional helpers (`bold()`, `italic()`, `link()`).
+    > - Therefore, `RawHtml` is designed primarily for `parse_mode: 'HTML'`. For consistent output between rendering modes, prefer native JSX components (`<Bold>`, `<Italic>`, `<Link>`, etc.) or zero-JSX functional helpers (`bold()`, `italic()`, `link()`).
 
 ---
 
@@ -433,12 +434,12 @@ Some features depend directly on the bot's account privileges and user privacy s
 
 ## Package Scope & Architecture
 
-`@telegram-markup/native` is purposefully designed as a **focused, zero-dependency message markup and formatting engine**:
+`@telegram-markup/native` is purposefully designed as a **focused, no-runtime-dependency message markup and formatting engine**:
 
 - **What it does:**
     - Compiles declarative JSX/TSX and functional trees into Telegram-compliant HTML strings (`parse_mode: 'HTML'`).
     - Compiles declarative trees into native `MessageEntity[]` arrays (`{ text, entities }`) with UTF-16 code unit offset precision.
-    - Enforces pre-flight Telegram Bot API nesting rules and length validation.
+    - Enforces the implemented nesting rules and offers opt-in message/caption length validation.
 - **What it does NOT do (by design):**
     - It does **not** make HTTP requests or wrap Telegram Bot API methods (like `sendMessage` or `sendPhoto`).
     - It does **not** build keyboards (`InlineKeyboardMarkup`, `ReplyKeyboardMarkup`).

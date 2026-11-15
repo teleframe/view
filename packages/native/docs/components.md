@@ -1,6 +1,6 @@
 # Components Guide
 
-`@telegram-markup/native` provides a rich library of pre-built, strongly-typed components.
+`@telegram-markup/native` provides TypeScript components and functional helpers for text formatting and message layout. TypeScript catches some invalid child combinations; runtime validation remains authoritative.
 
 ---
 
@@ -53,7 +53,7 @@ import { Br } from '@telegram-markup/native';
 
 <Br />          // 1 line break: '\n'
 <Br count={2} /> // 2 line breaks: '\n\n'
-<Br count={3} as="br" /> // 3 HTML breaks: '<br><br><br>'
+<Br count={3} as="br" /> // 3 Telegram HTML breaks: '<br><br><br>'
 ```
 
 ### Paragraphs (`<Paragraph />` / `<P />` / `<p>`)

@@ -3,6 +3,7 @@
  * @module @telegram-markup/native/components/user/user
  */
 
+import { TelegramSecurityError } from '../../sanitizer';
 import type { NativeChildren, TelegramNativeElement } from '../../tags/base';
 import type { NativeUserProps } from './types';
 
@@ -30,11 +31,11 @@ export function User(
     }
 
     if (id === undefined || id === null || String(id).trim() === '') {
-        throw new Error('[Telegram Markup] <User> requires a valid "id" prop.');
+        throw new TelegramSecurityError('[Telegram Markup] <User> requires a valid "id" prop.');
     }
     const numId = Number(id);
     if (!Number.isSafeInteger(numId) || numId <= 0) {
-        throw new Error(
+        throw new TelegramSecurityError(
             `[Telegram Markup] Invalid user ID: "${id}". Telegram user ID must be a positive integer.`,
         );
     }

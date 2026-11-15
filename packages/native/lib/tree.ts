@@ -1,5 +1,5 @@
 /**
- * @fileoverview Element tree expansion and single-pass component resolution
+ * @fileoverview Element tree expansion and one-time component resolution
  * @module @telegram-markup/native/tree
  */
 

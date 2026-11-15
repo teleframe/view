@@ -1,6 +1,6 @@
 # Architecture & Runtime
 
-`@telegram-markup/native` operates as a dual-target compilation pipeline: **Virtual Element Creation** followed by either **Direct MessageEntity Compilation** or **HTML Serialization**, guarded by pre-flight validation.
+`@telegram-markup/native` operates as a dual-target compilation pipeline: **Virtual Element Creation** followed by tree resolution and nesting validation, then either **Direct MessageEntity Compilation** or **HTML Serialization**. Length validation is optional.
 
 ```
                   TSX Source Code
@@ -13,8 +13,8 @@
                          │
                          ▼ Virtual Telegram Native Tree
              ┌────────────────────────┐
-             │  Validation Pipeline   │  <-- packages/native/lib/validation/
-             │  (Nesting & Limits)    │
+             │  Resolution & Checks  │  <-- tree.ts, validation/
+             │  (Nesting; opt. limits)│
              └────────────────────────┘
                          │
          ┌───────────────┴───────────────┐
@@ -68,13 +68,13 @@ The JSX runtime includes several compilation passes that bridge web developer er
 
 ### A. Direct MessageEntity Compiler (`render`)
 
-The primary compiler traverses the virtual element tree in a single pass:
+The compiler first resolves function components, validates the resolved tree, then traverses it to build the text and entities. This avoids HTML generation and parsing, though it is not a single-pass traversal of the original tree:
 
 - **UTF-16 Precision**: Calculates all entity offsets and lengths in UTF-16 code units (as required by Telegram Bot API).
 - **Zero HTML Parsing**: Emits a `{ text, entities }` object ready to pass directly to `bot.api.sendMessage(chat_id, text, { entities })` or grammY `ctx.reply(text, { entities })`.
-- **Entity Sorting & Overlap Check**: Automatically sorts entities according to Telegram specifications and verifies boundary constraints.
+- **Entity Sorting & Overlap Check**: Sorts entities by text offset, span length, and source-tree depth for identical spans. An active-ancestor stack checks crossing boundaries and entity compatibility. Flat inputs are processed in linear time after sorting; deeply nested entities may require checking each active ancestor.
 
-### B. High-Performance HTML Serializer (`renderToString` / `renderHTML`)
+### B. HTML Serializer (`renderToString` / `renderHTML`)
 
 The serializer compiles the virtual tree into safe HTML for `parse_mode: 'HTML'`:
 
@@ -82,7 +82,7 @@ The serializer compiles the virtual tree into safe HTML for `parse_mode: 'HTML'`
     - Inner text is escaped with `escapeHtml` (`&`, `<`, `>`).
     - Attributes are escaped with `escapeAttr` (`&`, `<`, `>`, `"`).
     - Quotes inside text are kept unescaped to match Telegram specifications.
-- **Component Resolution**: Function components are evaluated recursively until only primitive tags remain.
+- **Component Resolution**: Function components are evaluated once while resolving the tree, before validation and serialization.
 - **Special Tag Handlers**: Void tags like `<br count={2} />` and `<hr />` are transformed directly into line break sequences.
 
 ---
@@ -90,4 +90,4 @@ The serializer compiles the virtual tree into safe HTML for `parse_mode: 'HTML'`
 ## 4. Pre-Flight Validation Pipeline
 
 - **Nesting Rules (`validateNesting`)**: Enforces Telegram Bot API constraints before network requests (e.g. no blockquotes inside blockquotes, no formatting inside inline code, no nested links). Throws `TelegramNestingError` with exact element paths.
-- **Length Limits (`validateMessageLength` / `validateCaptionLength`)**: Optional pre-flight checking preventing `400 Bad Request: message is too long` errors by validating text length against Telegram limits (1–4096 for messages, 0–1024 for media captions). Throws `TelegramLimitError`.
+- **Length Limits (`validateMessageLength` / `validateCaptionLength`)**: Opt-in pre-flight checks through the `validate` option. Message text is checked against 1–4096 UTF-16 code units and captions against 0–1024. HTML length calculation uses a lightweight tag/entity stripper, not a complete HTML parser. Throws `TelegramLimitError` when enabled and a limit is violated.

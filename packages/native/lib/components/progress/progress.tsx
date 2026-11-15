@@ -3,6 +3,7 @@
  * @module @telegram-markup/native/components/progress/progress
  */
 
+import { normalizeInteger } from '../../sanitizer';
 import type { TelegramNativeElement } from '../../tags/base';
 import { STYLE_PRESETS } from './presets';
 import type { ExtendedProgressProps } from './types';
@@ -45,9 +46,10 @@ export const ProgressBar = ({
     suffix = '',
     mono = false,
 }: ExtendedProgressProps): TelegramNativeElement | any => {
-    const maxTotal = Math.max(1, total ?? max ?? 100);
-    const barSize = Math.max(1, size ?? length ?? 10);
-    const ratio = Math.max(0, Math.min(1, value / maxTotal));
+    const maxTotal = normalizeInteger(total ?? max, 100, 1, 1_000_000_000);
+    const barSize = normalizeInteger(size ?? length, 10, 1, 4096);
+    const safeValue = Number.isFinite(Number(value)) ? Math.max(0, Number(value)) : 0;
+    const ratio = Math.max(0, Math.min(1, safeValue / maxTotal));
     const percent = Math.round(ratio * 100);
 
     const preset = STYLE_PRESETS[style] ?? STYLE_PRESETS.blocks;

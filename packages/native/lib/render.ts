@@ -11,6 +11,7 @@ import {
     escapeAttr,
     escapeHtml,
     filterTelegramAttributes,
+    normalizeInteger,
     TELEGRAM_ALLOWED_TAGS,
 } from './sanitizer';
 import type { NativeChildren, TelegramNativeElement } from './tags';
@@ -124,7 +125,7 @@ export const renderToString = (
 
                 // Special handling for <br count={2} as="br"|"newline" />
                 if (tagName === 'br') {
-                    const count = Math.max(1, (props.count ?? props.lines ?? 1) as number);
+                    const count = normalizeInteger(props.count ?? props.lines, 1, 1, 100);
                     const symbol = props.as === 'br' ? '<br>' : '\n';
                     return symbol.repeat(count);
                 }
@@ -132,16 +133,16 @@ export const renderToString = (
                 // Special handling for <hr char="—" length={20} />
                 if (tagName === 'hr') {
                     const char = escapeHtml(String(props.char ?? '—'));
-                    const length = Math.max(1, (props.length ?? 20) as number);
-                    const before = '\n'.repeat((props.before ?? 1) as number);
-                    const after = '\n'.repeat((props.after ?? 1) as number);
+                    const length = normalizeInteger(props.length, 20, 1, 4096);
+                    const before = '\n'.repeat(normalizeInteger(props.before, 1, 0, 100));
+                    const after = '\n'.repeat(normalizeInteger(props.after, 1, 0, 100));
                     return `${before}${char.repeat(length)}${after}`;
                 }
 
                 // Special handling for <li> (fallback when not inside <Ul>/<Ol>)
                 if (tagName === 'li') {
                     const marker = escapeHtml(String(props.marker ?? '• '));
-                    const indent = Math.max(0, (props.indent ?? 0) as number);
+                    const indent = normalizeInteger(props.indent, 0, 0, 100);
                     const indentStr = '  '.repeat(indent);
                     const inner = serialize(props.children);
                     return `${indentStr}${marker}${inner}\n`;
@@ -149,11 +150,13 @@ export const renderToString = (
 
                 // Special handling for <p count={2} before={0} /> (virtual paragraph tag)
                 if (tagName === 'p') {
-                    const count = Math.max(
+                    const count = normalizeInteger(
+                        props.after ?? props.spacing ?? props.lines ?? props.count,
+                        2,
                         0,
-                        (props.after ?? props.spacing ?? props.lines ?? props.count ?? 2) as number,
+                        100,
                     );
-                    const beforeCount = Math.max(0, (props.before ?? 0) as number);
+                    const beforeCount = normalizeInteger(props.before, 0, 0, 100);
                     const inner = serialize(props.children);
                     return `${'\n'.repeat(beforeCount)}${inner}${'\n'.repeat(count)}`;
                 }

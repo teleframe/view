@@ -1,10 +1,10 @@
 /**
- * @fileoverview Single-pass compiler for Telegram Bot API MessageEntity output
+ * @fileoverview Compiler for Telegram Bot API MessageEntity output
  * @module @telegram-markup/native/entities
  */
 
 import { RAW_HTML_TYPE } from './components/raw-html';
-import { isValidUrl } from './sanitizer';
+import { isValidUrl, normalizeInteger, TelegramSecurityError } from './sanitizer';
 import type { NativeChildren } from './tags/base';
 import { normalizeTimeFormat, normalizeTimestamp } from './tags/time';
 import { resolveTree } from './tree';
@@ -154,8 +154,8 @@ export const validateEntitiesOverlap = (entities: MessageEntity[]): void => {
     }
 
     // Maintain an active ancestor stack representing the currently open entity hierarchy.
-    // In valid Telegram formatting, entities are strictly nested or disjoint (parentheses tree).
-    // An active ancestor stack provides strictly linear O(N) verification instead of quadratic O(N^2).
+    // The stack makes boundary checks constant-time per entity. Compatibility is checked
+    // against every active ancestor, so deeply nested input can still take O(N^2) time.
     const stack: { entity: MessageEntity; end: number }[] = [];
 
     for (let i = 0; i < ordered.length; i++) {
@@ -201,7 +201,7 @@ export const validateEntitiesOverlap = (entities: MessageEntity[]): void => {
 };
 
 /**
- * Compiles a Telegram JSX tree into text and MessageEntity array in a single pass.
+ * Resolves and validates a Telegram JSX tree, then compiles it into text and MessageEntity data.
  */
 export const compileToEntities = (tree: NativeChildren): RenderResult => {
     // 1. Recursively resolve components and callbacks exactly once
@@ -262,7 +262,7 @@ export const compileToEntities = (tree: NativeChildren): RenderResult => {
 
                 // Virtual line break
                 if (tag === 'br') {
-                    const count = Math.max(1, (props.count ?? props.lines ?? 1) as number);
+                    const count = normalizeInteger(props.count ?? props.lines, 1, 1, 100);
                     text += '\n'.repeat(count);
                     return;
                 }
@@ -270,9 +270,9 @@ export const compileToEntities = (tree: NativeChildren): RenderResult => {
                 // Virtual horizontal rule
                 if (tag === 'hr') {
                     const char = String(props.char ?? '—');
-                    const length = Math.max(1, (props.length ?? 20) as number);
-                    const before = '\n'.repeat((props.before ?? 1) as number);
-                    const after = '\n'.repeat((props.after ?? 1) as number);
+                    const length = normalizeInteger(props.length, 20, 1, 4096);
+                    const before = '\n'.repeat(normalizeInteger(props.before, 1, 0, 100));
+                    const after = '\n'.repeat(normalizeInteger(props.after, 1, 0, 100));
                     text += `${before}${char.repeat(length)}${after}`;
                     return;
                 }
@@ -280,7 +280,7 @@ export const compileToEntities = (tree: NativeChildren): RenderResult => {
                 // Virtual list item
                 if (tag === 'li') {
                     const marker = String(props.marker ?? '• ');
-                    const indent = Math.max(0, (props.indent ?? 0) as number);
+                    const indent = normalizeInteger(props.indent, 0, 0, 100);
                     const indentStr = '  '.repeat(indent);
                     text += `${indentStr}${marker}`;
                     traverse(props.children, depth);
@@ -290,10 +290,12 @@ export const compileToEntities = (tree: NativeChildren): RenderResult => {
 
                 // Virtual paragraph
                 if (tag === 'p') {
-                    const beforeCount = Math.max(0, (props.before ?? 0) as number);
-                    const afterCount = Math.max(
+                    const beforeCount = normalizeInteger(props.before, 0, 0, 100);
+                    const afterCount = normalizeInteger(
+                        props.after ?? props.spacing ?? props.lines ?? props.count,
+                        2,
                         0,
-                        (props.after ?? props.spacing ?? props.lines ?? props.count ?? 2) as number,
+                        100,
                     );
                     text += '\n'.repeat(beforeCount);
                     traverse(props.children, depth);
@@ -443,7 +445,7 @@ export const compileToEntities = (tree: NativeChildren): RenderResult => {
                             );
                         }
                         if (!isValidUrl(href)) {
-                            throw new Error(
+                            throw new TelegramSecurityError(
                                 `[Telegram Markup] Security Error: Invalid or prohibited URL in <a href="${href}">. Only http, https, tg, mailto, and tel schemes are allowed.`,
                             );
                         }
@@ -452,7 +454,7 @@ export const compileToEntities = (tree: NativeChildren): RenderResult => {
                             const userIdStr = href.slice('tg://user?id='.length);
                             const userId = Number(userIdStr);
                             if (!Number.isSafeInteger(userId) || userId <= 0) {
-                                throw new Error(
+                                throw new TelegramSecurityError(
                                     `[Telegram Markup] Invalid user ID in mention link: "${href}". User ID must be a positive integer.`,
                                 );
                             }
@@ -486,7 +488,7 @@ export const compileToEntities = (tree: NativeChildren): RenderResult => {
                         }
                         const userId = Number(rawId);
                         if (!Number.isSafeInteger(userId) || userId <= 0) {
-                            throw new Error(
+                            throw new TelegramSecurityError(
                                 `[Telegram Markup] Invalid user ID: "${rawId}". Telegram user ID must be a positive integer.`,
                             );
                         }
@@ -511,7 +513,7 @@ export const compileToEntities = (tree: NativeChildren): RenderResult => {
                         }
                         const emojiId = String(rawId).trim();
                         if (!/^\d+$/.test(emojiId)) {
-                            throw new Error(
+                            throw new TelegramSecurityError(
                                 `[Telegram Markup] Invalid emoji-id: "${rawId}". Telegram custom emoji ID must be a numeric string of digits.`,
                             );
                         }

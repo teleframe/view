@@ -4,8 +4,8 @@
 
 `@telegram-markup/native` provides two rendering pipelines:
 
-1. **`render(tree, options?)` (Primary)**: Compiles the JSX element tree directly into Telegram Bot API `{ text, entities }` data structure in a single pass.
-2. **`renderToString(tree, options?)` / `renderHTML(tree)` (Alternative)**: Serializes the JSX element tree into a safe, strictly sanitized Telegram Bot API HTML string for `parse_mode: 'HTML'`.
+1. **`render(tree, options?)`**: Resolves and validates the JSX tree, then compiles it into Telegram Bot API `{ text, entities }` without an HTML round trip.
+2. **`renderToString(tree, options?)` / `renderHTML(tree)`**: Resolves and validates the JSX tree, then serializes supported tags and escaped text for `parse_mode: 'HTML'`. `RawHtml` is emitted as-is and is not sanitized.
 
 ### 1.1 Types & Signatures
 
@@ -13,9 +13,10 @@
 export interface RenderOptions {
     /** Validate output length against Telegram Bot API limits */
     validate?: 'message' | 'caption' | false;
-    /** Fallback locale for Date/Time formatting (default: system/ISO) */
-    locale?: string;
 }
+
+// The same validate option is available to renderToString().
+// Locale selection belongs to the <Time locale="..."> component, not render options.
 
 export interface RenderResult {
     /** Plain text with all formatting tags stripped */
@@ -81,19 +82,19 @@ bot.command('photo', async (ctx) => {
 
 1. **Telegram Bot API Conformance**:
     - Entities use UTF-16 code units for both `offset` and `length`, as required by Telegram.
-    - Entities are properly nested and never overlap or intersect invalidly.
-    - All entity properties (`url`, `user`, `language`, `custom_emoji_id`, `unix_time`, `date_time_format`) strictly match Bot API schemas.
+    - The compiler rejects unsupported nesting and crossing entity ranges for generated entities.
+    - Common entity properties are validated and normalized; this is not a substitute for Bot API validation, especially when using `RawHtml` or constructing low-level data yourself.
 2. **Uniform Text Security**:
     - Dynamic text children, list markers, dividers, and fallbacks are treated as plain text, preventing markup injection.
-    - In HTML mode, all content is escaped; tags and attributes are restricted to the Telegram Bot API whitelist.
+    - In HTML mode, ordinary text and supported attributes are escaped; generated tags and attributes are restricted to the implemented whitelist. `RawHtml` is an explicit bypass.
     - Raw HTML injection is only possible via an explicit, unsafe escape hatch (`<RawHtml html="..." />`).
 3. **Pre-flight Error Handling**:
     - Invalid tag nesting (e.g., nested blockquotes, formatting inside code) is intercepted before API calls with clear error messages.
-    - Message length limits (1–4096 characters for messages, 1–1024 characters for captions) are validated without silent truncation.
+    - Message length checks are opt-in via `validate: 'message'` or `validate: 'caption'`. Rendering never truncates output.
 
 ### What the package DOES NOT GUARANTEE:
 
-- **Pixel-identical client rendering**: Visual display (fonts, line wraps, emoji rendering, blockquote borders) depends entirely on Telegram client versions and OS platforms (iOS, Android, Desktop, Web). The package guarantees valid data delivery to the Bot API, not identical client pixel rendering.
+- **Successful delivery or pixel-identical rendering**: The Bot API may reject data based on its current rules, bot permissions, or message context. Visual display also depends on Telegram client versions and platforms.
 
 ---
 
@@ -103,7 +104,7 @@ When developing bots, developers frequently encounter discrepancies between what
 
 1. **Line Breaks (`<br>` vs `\n`)**:
     - In `MessageEntity` mode, `<br>` and `\n` compile directly into standard `\n` character codes.
-    - In HTML mode, `<br>` is output as `<br>` (or newline if configured).
+    - In HTML mode, the native `<br as="br">` form is output as `<br>` tags; the default form emits newline characters.
     - _Client Quirk_: Telegram Desktop and Mobile clients render standard `\n` identically. However, consecutive multiple newlines (`\n\n\n`) within blockquotes may be collapsed or visually shortened by some mobile client UI layouts.
 
 2. **Monospace & Code Blocks**:

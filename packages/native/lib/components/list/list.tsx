@@ -3,6 +3,7 @@
  * @module @telegram-markup/native/components/list/list
  */
 
+import { normalizeInteger } from '../../sanitizer';
 import type { TelegramNativeElement } from '../../tags/base';
 import type { NativeLiProps, NativeListProps, NativeOlProps, NativeUlProps } from './types';
 import { BULLET_PRESETS, flattenChildren, formatNumberMarker } from './utils';
@@ -40,7 +41,9 @@ export const List = ({
     const items = flattenChildren(children);
     if (items.length === 0) return null;
 
-    const delimiter = '\n'.repeat(Math.max(1, spacing));
+    const safeSpacing = normalizeInteger(spacing, 1, 1, 100);
+    const safeIndent = normalizeInteger(indent, 0, 0, 100);
+    const delimiter = '\n'.repeat(safeSpacing);
     const renderedItems: any[] = [];
 
     for (let i = 0; i < items.length; i++) {
@@ -49,12 +52,12 @@ export const List = ({
 
         let itemMarker: string;
         let itemContent: any = item;
-        let itemIndentLevel = indent;
+        let itemIndentLevel = safeIndent;
 
         if (item && typeof item === 'object' && (item.type === Li || item.type === 'li')) {
             itemContent = item.props?.children;
             if (item.props?.indent !== undefined) {
-                itemIndentLevel = item.props.indent;
+                itemIndentLevel = normalizeInteger(item.props.indent, safeIndent, 0, 100);
             }
             if (item.props?.marker !== undefined) {
                 itemMarker = item.props.marker;
@@ -87,7 +90,7 @@ export const List = ({
             itemMarker += ' ';
         }
 
-        const indentStr = '  '.repeat(Math.max(0, itemIndentLevel));
+        const indentStr = '  '.repeat(normalizeInteger(itemIndentLevel, 0, 0, 100));
 
         if (indentMultiline && typeof itemContent === 'string' && itemContent.includes('\n')) {
             const pad = indentStr + ' '.repeat(itemMarker.length);

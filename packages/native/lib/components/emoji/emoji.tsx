@@ -3,6 +3,7 @@
  * @module @telegram-markup/native/components/emoji/emoji
  */
 
+import { TelegramSecurityError } from '../../sanitizer';
 import type { EmojiChildren, TelegramNativeElement } from '../../tags/base';
 import type { NativeEmojiProps } from './types';
 
@@ -30,11 +31,11 @@ export function Emoji(
     }
 
     if (id === undefined || id === null || String(id).trim() === '') {
-        throw new Error('[Telegram Markup] <Emoji> requires a valid "id" prop.');
+        throw new TelegramSecurityError('[Telegram Markup] <Emoji> requires a valid "id" prop.');
     }
     const strId = String(id).trim();
     if (!/^\d+$/.test(strId)) {
-        throw new Error(
+        throw new TelegramSecurityError(
             `[Telegram Markup] Invalid emoji-id: "${id}". Telegram custom emoji ID must be a numeric string of digits.`,
         );
     }

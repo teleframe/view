@@ -24,6 +24,35 @@ export const escapeAttr = (value: unknown): string => {
 };
 
 /**
+ * Error thrown when a security validation rule fails (prohibited URL scheme, unsafe user ID, etc.)
+ */
+export class TelegramSecurityError extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = 'TelegramSecurityError';
+    }
+}
+
+/**
+ * Normalizes and clamps integer parameters (count, length, indent, spacing)
+ * to safe, finite bounds to prevent RangeError and memory exhaustion.
+ */
+export const normalizeInteger = (
+    value: unknown,
+    defaultValue: number,
+    min: number = 0,
+    max: number = 4096,
+): number => {
+    if (value === undefined || value === null) return defaultValue;
+    const num = Number(value);
+    if (!Number.isFinite(num) || Number.isNaN(num)) return defaultValue;
+    const intVal = Math.trunc(num);
+    if (intVal < min) return min;
+    if (intVal > max) return max;
+    return intVal;
+};
+
+/**
  * Whitelist of URL schemes supported by Telegram Bot API.
  */
 const ALLOWED_URL_SCHEMES = ['http:', 'https:', 'tg:', 'mailto:', 'tel:'];
@@ -98,7 +127,7 @@ export const filterTelegramAttributes = (
                 );
             }
             if (!isValidUrl(href)) {
-                throw new Error(
+                throw new TelegramSecurityError(
                     `[Telegram Markup] Security Error: Invalid or prohibited URL in <a href="${href}">. Only http, https, tg, mailto, and tel schemes are allowed.`,
                 );
             }
@@ -106,7 +135,7 @@ export const filterTelegramAttributes = (
                 const userIdStr = href.slice('tg://user?id='.length);
                 const userId = Number(userIdStr);
                 if (!Number.isSafeInteger(userId) || userId <= 0) {
-                    throw new Error(
+                    throw new TelegramSecurityError(
                         `[Telegram Markup] Invalid user ID in mention link: "${href}". User ID must be a positive integer.`,
                     );
                 }
@@ -124,7 +153,7 @@ export const filterTelegramAttributes = (
             }
             const strId = String(emojiId).trim();
             if (!/^\d+$/.test(strId)) {
-                throw new Error(
+                throw new TelegramSecurityError(
                     `[Telegram Markup] Invalid emoji-id: "${emojiId}". Telegram custom emoji ID must be a numeric string of digits.`,
                 );
             }
