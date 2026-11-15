@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [0.2.4](https://github.com/teleframe/view/compare/v0.2.3...v0.2.4) (2026-11-15)
+
+
+### ♻️ Code Refactoring
+
+* **native:** eliminate implicit JSX resolution by using direct AST elements in components ([#10](https://github.com/teleframe/view/issues/10)) ([6ea7153](https://github.com/teleframe/view/commit/6ea7153e13412c7494367fa02186acb361f9ca5a))
+
 ## [0.2.3](https://github.com/teleframe/view/compare/v0.2.2...v0.2.3) (2026-11-15)
 
 
