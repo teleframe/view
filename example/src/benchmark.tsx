@@ -8,7 +8,8 @@
  */
 
 import { runEdgeScenarios, runValidationScenarios } from './benchmark/scenarios-edge';
-import { runFlatScenarios, runNestedScenarios } from './benchmark/scenarios-flat';
+import { runFlatScenarios } from './benchmark/scenarios-flat';
+import { runNestedScenarios } from './benchmark/scenarios-nested';
 
 function runBenchmarkSuite() {
     console.log(
