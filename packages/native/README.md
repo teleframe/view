@@ -354,18 +354,31 @@ Telegram Bot API enforces strict character count limits:
 | **Media Caption** (photo, video, audio, document) | **1,024 characters**              | `TelegramLimitError`     |
 | **Minimum Length**                                | **1 character** (cannot be empty) | `TelegramLimitError`     |
 
+### How Limits Are Calculated: Telegram-Accurate Parsed Length
+
+> [!IMPORTANT]
+> According to the [official Telegram Bot API specification](https://core.telegram.org/bots/api#sendmessage), message and caption length limits are measured in **UTF-16 code units after entities/HTML parsing**.
+>
+> This means that:
+>
+> - HTML tags (`<b>`, `</b>`, `<pre>`, `<blockquote expandable>`, etc.) **do not consume** message length limits.
+> - Link URLs (e.g. `<a href="https://example.com/very/long/url">label</a>`) **do not consume** message length limits — only the label text counts!
+> - HTML entity escapes (e.g. `&amp;`) count as **1 character** (`&`), not 5!
+>
+> When you pass `validate: 'message'` or `validate: 'caption'` to `renderToString()` or `render()`, the validation engine parses/strips tags and decodes entities before checking length. This guarantees that messages with long URLs or rich markup are **never falsely rejected**.
+
 ### Enabling Pre-flight Validation:
 
 ```tsx
 import { render, renderToString } from '@telegram-markup/native';
 
-// 1. In render() via options:
+// 1. In render() (MessageEntity mode):
 const { text, entities } = render(screen, { validate: 'message' });
 
 // 2. For media captions:
 const { text: caption, entities: caption_entities } = render(captionTree, { validate: 'caption' });
 
-// 3. In renderToString() via options:
+// 3. In renderToString() (HTML string mode):
 const html = renderToString(screen, { validate: 'message' });
 ```
 
@@ -383,6 +396,7 @@ const html = renderToString(screen, { validate: 'message' });
     - `>` → `&gt;`
     - `"` → `&quot;`
       Raw user strings containing `<script>` or unmatched brackets will never crash the Telegram parser or execute code.
+
 2. **Strict URL Scheme Whitelist**:
    `<Link href="...">` permits only safe schemes:
     - `https://`
@@ -393,19 +407,44 @@ const html = renderToString(screen, { validate: 'message' });
 
     Attempting to use `javascript:`, `data:`, or `vbscript:` immediately throws a security error.
 
-3. **Explicit Raw HTML Escape Hatch**:
-   To insert pre-rendered HTML, explicitly use `<RawHtml html="..." />`.
+3. **Explicit Raw HTML Escape Hatch (`<RawHtml>` / `rawHtml`)**:
+   When you need to insert pre-rendered or author-sanitized HTML directly, use `<RawHtml html="..." />`.
+
+    > [!WARNING]
+    > **Dual-Mode Behavior of RawHtml:**
+    >
+    > - In **HTML mode** (`renderToString` / `renderHtml`), `RawHtml` is inserted directly as-is into the final string without escaping.
+    > - In **Entity mode** (`render`), HTML tags are stripped via regex (`<[^>]*>`) to maintain plain-text stream integrity, but pre-encoded HTML entities (such as `&amp;` or `&quot;`) are **not decoded**.
+    > - Therefore, `RawHtml` is designed primarily for `parse_mode: 'HTML'`. For 100% identical cross-mode rendering, prefer native JSX components (`<Bold>`, `<Italic>`, `<Link>`, etc.) or zero-JSX functional helpers (`bold()`, `italic()`, `link()`).
 
 ---
 
-## Client-Side Rendering Differences
+## Platform & Context Constraints (Telegram Bot API)
 
-| Feature                   | Guaranteed by Engine                     | Client-Dependent Behavior                                                     |
-| :------------------------ | :--------------------------------------- | :---------------------------------------------------------------------------- |
-| **Entities & Formatting** | 100% exact UTF-16 offsets and valid tags | Font rendering, ligatures, client OS text rendering                           |
-| **Line Breaks**           | Standard `\n` characters preserved       | Some mobile clients collapse multiple consecutive newlines inside blockquotes |
-| **Monospace Font**        | Encoded as `code` / `pre` entities       | Rendered with the user's client-configured monospace font                     |
-| **Custom Emoji**          | Correct `custom_emoji_id` attached       | Animation playback requires Telegram Premium on the viewing client            |
+Some features depend directly on the bot's account privileges and user privacy settings:
+
+| Feature                   | API Element                             | Telegram Bot API Constraint                                                                                                                                                                                                            | Reference                                                                   |
+| :------------------------ | :-------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------- |
+| **User Mention by ID**    | `<User id={123}>` / `user(123, 'Name')` | Works only if the user has previously interacted with the bot, has open privacy settings, or is a member of the same group chat as the bot. Otherwise, Telegram renders the link or ignores the mention.                               | [Formatting Options](https://core.telegram.org/bots/api#formatting-options) |
+| **Custom Animated Emoji** | `<Emoji id="...">` / `emoji(...)`       | Telegram custom emoji (`<tg-emoji>`) can only be sent by bots that have an active Telegram Premium subscription (or if sending to a boosted group/channel). Viewing animated emojis requires Telegram Premium on the recipient client. | [Custom Emoji](https://core.telegram.org/bots/api#custom-emoji)             |
+| **Nested Quotes**         | `<blockquote>`                          | Telegram Bot API strictly forbids nesting blockquotes inside other blockquotes. Caught pre-flight by `@telegram-markup/native`.                                                                                                        | [Formatting Options](https://core.telegram.org/bots/api#formatting-options) |
+
+---
+
+## Package Scope & Architecture
+
+`@telegram-markup/native` is purposefully designed as a **focused, zero-dependency message markup and formatting engine**:
+
+- **What it does:**
+    - Compiles declarative JSX/TSX and functional trees into Telegram-compliant HTML strings (`parse_mode: 'HTML'`).
+    - Compiles declarative trees into native `MessageEntity[]` arrays (`{ text, entities }`) with UTF-16 code unit offset precision.
+    - Enforces pre-flight Telegram Bot API nesting rules and length validation.
+- **What it does NOT do (by design):**
+    - It does **not** make HTTP requests or wrap Telegram Bot API methods (like `sendMessage` or `sendPhoto`).
+    - It does **not** build keyboards (`InlineKeyboardMarkup`, `ReplyKeyboardMarkup`).
+    - It does **not** manage webhooks or long-polling.
+
+Because it does not tie you to any specific bot framework, you can use `@telegram-markup/native` with **grammY, Telegraf, Puregram, node-telegram-bot-api, or native `fetch`**.
 
 ---
 

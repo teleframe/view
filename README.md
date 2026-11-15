@@ -337,12 +337,13 @@ bot.start();
 
 ---
 
-## Security Model & Guarantees
+## Security Model & Architectural Guarantees
 
 1. **Uniform Dynamic Text Sanitization**: All interpolated strings, list markers, dividers, and fallback texts are escaped. Raw strings are never evaluated as markup.
 2. **Strict URL Scheme Whitelist**: `<Link href="...">` permits only `https://`, `http://`, `tg://`, `mailto:`, and `tel:`. Dangerous protocols (`javascript:`, `data:`, `vbscript:`) immediately throw security errors.
 3. **Pre-flight Nesting Validation**: Automatically validates element nesting according to Telegram Bot API rules (no nested blockquotes, no formatting inside code, no nested links).
-4. **Limits Validation**: Optional `{ validate: 'message' | 'caption' }` protects against Telegram 400 errors when message length exceeds 4,096 characters (or 1,024 for media captions).
+4. **Limits Validation on Parsed Text**: Optional `{ validate: 'message' | 'caption' }` validates text length **after entity/HTML parsing** (matching Telegram Bot API's 1–4,096 char limit for messages and 0–1,024 for captions). Tags, attributes, and long URLs never cause false overflow rejections.
+5. **Focused Package Scope**: Focuses strictly on declarative message formatting (HTML & `MessageEntity[]`). Zero network dependencies, zero bot framework lock-in. Compatible with grammY, Telegraf, Puregram, and custom bot architectures.
 
 ---
 
