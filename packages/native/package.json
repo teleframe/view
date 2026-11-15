@@ -1,0 +1,79 @@
+{
+    "name": "@telegram-markup/native",
+    "version": "0.1.0",
+    "description": "Native HTML and MessageEntity formatting engine for Telegram bots",
+    "type": "module",
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "bun": "./dist/bun/index.js",
+            "import": "./dist/index.js",
+            "default": "./dist/index.js"
+        },
+        "./jsx-runtime": {
+            "types": "./dist/jsx-runtime.d.ts",
+            "bun": "./dist/bun/jsx-runtime.js",
+            "import": "./dist/jsx-runtime.js",
+            "default": "./dist/jsx-runtime.js"
+        },
+        "./jsx-dev-runtime": {
+            "types": "./dist/jsx-dev-runtime.d.ts",
+            "bun": "./dist/bun/jsx-dev-runtime.js",
+            "import": "./dist/jsx-dev-runtime.js",
+            "default": "./dist/jsx-dev-runtime.js"
+        }
+    },
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE"
+    ],
+    "scripts": {
+        "build": "bun ../../build.ts",
+        "check": "tsc --noEmit",
+        "test": "bun test"
+    },
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/naylour/telegram-markup.git",
+        "directory": "packages/native"
+    },
+    "bugs": {
+        "url": "https://github.com/naylour/telegram-markup/issues"
+    },
+    "homepage": "https://github.com/naylour/telegram-markup#readme",
+    "keywords": [
+        "telegram",
+        "telegram-bot",
+        "bot-api",
+        "entities",
+        "message-entity",
+        "grammy",
+        "jsx",
+        "tsx",
+        "markup",
+        "html"
+    ],
+    "author": {
+        "name": "naylour",
+        "email": "naylour@tuta.io",
+        "url": "https://github.com/naylour"
+    },
+    "devDependencies": {
+        "@types/bun": "catalog:",
+        "@types/react": "catalog:",
+        "typescript": "catalog:"
+    },
+    "peerDependencies": {
+        "typescript": "catalog:"
+    },
+    "peerDependenciesMeta": {
+        "typescript": {
+            "optional": true
+        }
+    }
+}
