@@ -41,21 +41,34 @@ export const stripTelegramHtml = (html: string): string => {
     return html
         .replace(/<br\s*\/?>/gi, '\n')
         .replace(/<[^>]*>/g, '')
-        .replace(/&quot;/g, '"')
-        .replace(/&amp;/g, '&')
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&#([xX][0-9a-fA-F]+|\d+);/g, (_match, codeStr) => {
-            const isHex = codeStr.startsWith('x') || codeStr.startsWith('X');
-            const codePoint = isHex ? parseInt(codeStr.slice(1), 16) : parseInt(codeStr, 10);
-            if (Number.isFinite(codePoint) && codePoint >= 0 && codePoint <= 0x10ffff) {
-                try {
-                    return String.fromCodePoint(codePoint);
-                } catch {
-                    return _match;
+        .replace(/&(quot|amp|lt|gt|#(?:[xX][0-9a-fA-F]+|\d+));/g, (match, entity: string) => {
+            switch (entity) {
+                case 'quot':
+                    return '"';
+                case 'amp':
+                    return '&';
+                case 'lt':
+                    return '<';
+                case 'gt':
+                    return '>';
+                default: {
+                    if (entity.startsWith('#')) {
+                        const codeStr = entity.slice(1);
+                        const isHex = codeStr.startsWith('x') || codeStr.startsWith('X');
+                        const codePoint = isHex
+                            ? parseInt(codeStr.slice(1), 16)
+                            : parseInt(codeStr, 10);
+                        if (Number.isFinite(codePoint) && codePoint >= 0 && codePoint <= 0x10ffff) {
+                            try {
+                                return String.fromCodePoint(codePoint);
+                            } catch {
+                                return match;
+                            }
+                        }
+                    }
+                    return match;
                 }
             }
-            return _match;
         });
 };
 

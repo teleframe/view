@@ -145,4 +145,28 @@ describe('Telegram Limits Validation', () => {
             TelegramLimitError,
         );
     });
+
+    test('prevents double-decoding of escaped entity strings in standard JSX text', () => {
+        // In standard text, literal '&#38;' is escaped to '&amp;#38;'.
+        // Telegram parses '&amp;#38;' once -> resulting text is '&#38;' (length 5), NOT '&' (length 1).
+        expect(stripTelegramHtml('&amp;#38;')).toBe('&#38;');
+        expect(stripTelegramHtml('&amp;quot;')).toBe('&quot;');
+        expect(stripTelegramHtml('&amp;lt;')).toBe('&lt;');
+        expect(stripTelegramHtml('&amp;amp;')).toBe('&amp;');
+
+        // 900 repetitions of '&#38;' in standard JSX text:
+        // Plain text length = 900 * 5 = 4500 characters (> 4096 limit).
+        // Serialized HTML length = 900 * 9 = 8100 characters.
+        // It MUST throw TelegramLimitError because Telegram parsed text is 4500 UTF-16 code units.
+        const repetitiveText = '&#38;'.repeat(900);
+        expect(() => renderToString(repetitiveText, { validate: 'message' })).toThrow(
+            TelegramLimitError,
+        );
+
+        // 800 repetitions = 800 * 5 = 4000 characters (<= 4096 limit).
+        // Serialized HTML length = 800 * 9 = 7200 characters.
+        // It must NOT throw.
+        const validRepetitiveText = '&#38;'.repeat(800);
+        expect(() => renderToString(validRepetitiveText, { validate: 'message' })).not.toThrow();
+    });
 });
