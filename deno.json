@@ -7,7 +7,7 @@
     ],
     "compilerOptions": {
         "jsx": "react-jsx",
-        "jsxImportSource": "@teleframe/view"
+        "jsxImportSource": "@view/native"
     },
     "publish": {
         "include": [
@@ -36,6 +36,7 @@
         "@view/native": "./packages/native/lib/index.ts",
         "@view/native/": "./packages/native/lib/",
         "@teleframe/view": "./src/index.ts",
+        "@teleframe/view/": "./src/",
         "@teleframe/view/native": "./packages/native/lib/index.ts",
         "@teleframe/view/jsx-runtime": "./src/jsx-runtime.ts",
         "@teleframe/view/jsx-dev-runtime": "./src/jsx-dev-runtime.ts",
