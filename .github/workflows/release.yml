@@ -108,7 +108,13 @@ jobs:
             # 1. Publish to NPM
             - name: Publish to NPM
               if: ${{ !inputs.dry_run }}
-              run: npm publish --provenance --access public
+              run: |
+                  PKG_VERSION=$(node -p "require('./package.json').version")
+                  if npm view "@teleframe/view@$PKG_VERSION" version >/dev/null 2>&1; then
+                    echo "Version $PKG_VERSION is already published to NPM. Skipping."
+                  else
+                    npm publish --provenance --access public
+                  fi
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
