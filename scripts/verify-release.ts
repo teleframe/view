@@ -27,6 +27,44 @@ async function verifyRelease() {
     console.log('\n🚀 Starting Release Verification Pipeline');
     console.log('===========================================\n');
 
+    // 0. Version Consistency & Tag Verification
+    await runStep('Verifying manifest version consistency', async () => {
+        const pkg = await Bun.file(`${ROOT_DIR}/package.json`).json();
+        const deno = await Bun.file(`${ROOT_DIR}/deno.json`).json();
+        const nativePkg = await Bun.file(`${ROOT_DIR}/packages/native/package.json`).json();
+
+        if (pkg.version !== deno.version) {
+            throw new Error(
+                `Version mismatch: package.json (${pkg.version}) !== deno.json (${deno.version})`,
+            );
+        }
+        if (pkg.version !== nativePkg.version) {
+            throw new Error(
+                `Version mismatch: package.json (${pkg.version}) !== packages/native (${nativePkg.version})`,
+            );
+        }
+
+        const manifestFile = Bun.file(`${ROOT_DIR}/.release-please-manifest.json`);
+        if (await manifestFile.exists()) {
+            const manifest = await manifestFile.json();
+            if (manifest['.'] && manifest['.'] !== pkg.version) {
+                throw new Error(
+                    `Version mismatch: package.json (${pkg.version}) !== .release-please-manifest.json (${manifest['.']})`,
+                );
+            }
+        }
+
+        const tag = process.env.GITHUB_REF_NAME;
+        if (tag && tag.startsWith('v')) {
+            const expected = tag.slice(1);
+            if (pkg.version !== expected) {
+                throw new Error(
+                    `Tag version mismatch: git tag ${tag} expects ${expected}, but package.json has ${pkg.version}`,
+                );
+            }
+        }
+    });
+
     // 1. Code Formatting
     await runStep('Checking code formatting (bun fmt --check)', async () => {
         await $`bun fmt --check`.quiet();
