@@ -30,7 +30,8 @@ export class TelegramLimitError extends Error {
 }
 
 /**
- * Strips Telegram-allowed HTML tags and decodes Telegram HTML entities.
+ * Strips Telegram-allowed HTML tags and decodes Telegram HTML entities
+ * (including named entities &quot;, &amp;, &lt;, &gt; and all numerical character references &#38;, &#x26;).
  * Returns the plain text representation as parsed by Telegram Bot API.
  *
  * In Telegram Bot API, message length (1–4096) and caption length (0–1024)
@@ -43,7 +44,19 @@ export const stripTelegramHtml = (html: string): string => {
         .replace(/&quot;/g, '"')
         .replace(/&amp;/g, '&')
         .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>');
+        .replace(/&gt;/g, '>')
+        .replace(/&#([xX][0-9a-fA-F]+|\d+);/g, (_match, codeStr) => {
+            const isHex = codeStr.startsWith('x') || codeStr.startsWith('X');
+            const codePoint = isHex ? parseInt(codeStr.slice(1), 16) : parseInt(codeStr, 10);
+            if (Number.isFinite(codePoint) && codePoint >= 0 && codePoint <= 0x10ffff) {
+                try {
+                    return String.fromCodePoint(codePoint);
+                } catch {
+                    return _match;
+                }
+            }
+            return _match;
+        });
 };
 
 const extractText = (value: string | { text: string }): string => {

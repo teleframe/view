@@ -4,8 +4,10 @@
 
 import { describe, expect, test } from 'bun:test';
 import {
+    RawHtml,
     render,
     renderToString,
+    stripTelegramHtml,
     TELEGRAM_LIMITS,
     TelegramLimitError,
     validateCaptionLength,
@@ -100,5 +102,47 @@ describe('Telegram Limits Validation', () => {
         // Serialized HTML contains &amp; repeated 4090 times = 20,450 characters!
         // But parsed text length is 4090 <= 4096, so it must pass!
         expect(() => renderToString(entitiesMarkup, { validate: 'message' })).not.toThrow();
+    });
+
+    test('stripTelegramHtml decodes named and numerical HTML entities accurately', () => {
+        // Strips actual HTML tags and decodes named entities
+        expect(stripTelegramHtml('<b>&amp;&quot;</b>')).toBe('&"');
+        expect(stripTelegramHtml('&lt;hello&gt;')).toBe('<hello>');
+
+        // Decimal numerical entities (&#38; is '&', &#8800; is '≠')
+        expect(stripTelegramHtml('&#38;')).toBe('&');
+        expect(stripTelegramHtml('&#8800;')).toBe('≠');
+
+        // Hexadecimal numerical entities (&#x26; is '&', &#x2260; is '≠')
+        expect(stripTelegramHtml('&#x26;')).toBe('&');
+        expect(stripTelegramHtml('&#X26;')).toBe('&');
+        expect(stripTelegramHtml('&#x2260;')).toBe('≠');
+
+        // Emoji surrogate pairs (&#x1F600; / &#128512; is 😀, 2 UTF-16 code units)
+        const emojiDec = stripTelegramHtml('&#128512;');
+        const emojiHex = stripTelegramHtml('&#x1F600;');
+        expect(emojiDec).toBe('😀');
+        expect(emojiHex).toBe('😀');
+        expect(emojiHex.length).toBe(2); // In UTF-16, 😀 takes 2 code units
+    });
+
+    test('validates message length for RawHtml with numerical HTML entities', () => {
+        // RawHtml with 4090 decimal entities &#38; (&)
+        // Raw string length = 4090 * 5 = 20,450 characters
+        // Parsed length = 4090 code units <= 4096, must pass!
+        const rawDecimal = <RawHtml html={'&#38;'.repeat(4090)} />;
+        expect(() => renderToString(rawDecimal, { validate: 'message' })).not.toThrow();
+
+        // RawHtml with 4090 hex entities &#x26; (&)
+        // Raw string length = 4090 * 6 = 24,540 characters
+        // Parsed length = 4090 code units <= 4096, must pass!
+        const rawHex = <RawHtml html={'&#x26;'.repeat(4090)} />;
+        expect(() => renderToString(rawHex, { validate: 'message' })).not.toThrow();
+
+        // RawHtml exceeding limit with numerical entities: 4100 entities = 4100 code units > 4096
+        const rawExceeding = <RawHtml html={'&#38;'.repeat(4100)} />;
+        expect(() => renderToString(rawExceeding, { validate: 'message' })).toThrow(
+            TelegramLimitError,
+        );
     });
 });
