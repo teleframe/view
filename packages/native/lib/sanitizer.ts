@@ -3,6 +3,8 @@
  * @module @telegram-markup/native/sanitizer
  */
 
+import { normalizeTimeFormat, normalizeTimestamp } from './tags/time';
+
 /**
  * Escapes characters with special meaning in Telegram HTML: &, <, >
  * All dynamic plain text strings MUST be processed through this function.
@@ -103,7 +105,7 @@ export const filterTelegramAttributes = (
             if (/^tg:\/\/user\?id=/i.test(href)) {
                 const userIdStr = href.slice('tg://user?id='.length);
                 const userId = Number(userIdStr);
-                if (!Number.isInteger(userId) || userId <= 0) {
+                if (!Number.isSafeInteger(userId) || userId <= 0) {
                     throw new Error(
                         `[Telegram Markup] Invalid user ID in mention link: "${href}". User ID must be a positive integer.`,
                     );
@@ -140,13 +142,14 @@ export const filterTelegramAttributes = (
                     '[Telegram Markup] Invalid attribute: <tg-time> requires a valid "unix" attribute.',
                 );
             }
-            validAttrs.unix = String(props.unix);
+            validAttrs.unix = String(normalizeTimestamp(props.unix));
             if (
                 props.format !== undefined &&
                 props.format !== null &&
                 String(props.format).trim() !== ''
             ) {
-                validAttrs.format = String(props.format).trim();
+                const format = normalizeTimeFormat(String(props.format).trim());
+                if (format) validAttrs.format = format;
             }
             break;
         }

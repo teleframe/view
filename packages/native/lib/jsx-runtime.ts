@@ -31,7 +31,7 @@ export const jsx = (type: any, props: any, key?: any): TelegramNativeElement => 
             throw new Error('[Telegram Markup] <user> requires a valid "id" prop.');
         }
         const numId = Number(id);
-        if (!Number.isInteger(numId) || numId <= 0) {
+        if (!Number.isSafeInteger(numId) || numId <= 0) {
             throw new Error(
                 `[Telegram Markup] Invalid user ID: "${id}". Telegram user ID must be a positive integer.`,
             );

@@ -102,9 +102,9 @@
         "example"
     ],
     "devDependencies": {
-        "@types/bun": "catalog:",
-        "@types/react": "catalog:",
-        "typescript": "catalog:"
+        "@types/bun": "latest",
+        "@types/react": "^19.3.0",
+        "typescript": "^6.0.3"
     },
     "peerDependencies": {
         "typescript": ">=5.0.0"

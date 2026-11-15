@@ -465,6 +465,13 @@ describe('Telegram Nesting Validation (Runtime)', () => {
             { type: 'italic', offset: 2, length: 5 },
         ];
         expect(() => validateEntitiesOverlap(validEntities as any)).not.toThrow();
+
+        // Unsorted public input is normalized before overlap checks.
+        const unsortedValidEntities = [
+            { type: 'italic', offset: 2, length: 5 },
+            { type: 'bold', offset: 0, length: 10 },
+        ];
+        expect(() => validateEntitiesOverlap(unsortedValidEntities as any)).not.toThrow();
     });
 
     test('renders identical boundary permitted combinations for both render and renderToString', () => {

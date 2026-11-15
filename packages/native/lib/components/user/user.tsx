@@ -33,7 +33,7 @@ export function User(
         throw new Error('[Telegram Markup] <User> requires a valid "id" prop.');
     }
     const numId = Number(id);
-    if (!Number.isInteger(numId) || numId <= 0) {
+    if (!Number.isSafeInteger(numId) || numId <= 0) {
         throw new Error(
             `[Telegram Markup] Invalid user ID: "${id}". Telegram user ID must be a positive integer.`,
         );

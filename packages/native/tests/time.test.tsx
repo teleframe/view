@@ -60,4 +60,20 @@ describe('Time Component Rendering', () => {
         );
         expect(renderToString(el)).toBe('<tg-time unix="1718000000" format="r">Just now</tg-time>');
     });
+
+    test('validates intrinsic tg-time values and normalizes timestamps', () => {
+        expect(
+            renderToString(
+                <tg-time unix={1718000000123} format="relative">
+                    Now
+                </tg-time>,
+            ),
+        ).toBe('<tg-time unix="1718000000" format="r">Now</tg-time>');
+        for (const unix of [NaN, Infinity, -1, 'not-a-number']) {
+            expect(() => renderToString(<tg-time unix={unix as number} />)).toThrow();
+        }
+        expect(() =>
+            renderToString(<tg-time unix={1718000000} format={'invalid' as any} />),
+        ).toThrow();
+    });
 });

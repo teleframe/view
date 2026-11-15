@@ -130,17 +130,40 @@ export const isEntityNestingAllowed = (parentType: string, childType: string): b
  * and never overlap/intersect across boundaries or violate type compatibility.
  */
 export const validateEntitiesOverlap = (entities: MessageEntity[]): void => {
-    for (let i = 0; i < entities.length; i++) {
-        const a = entities[i];
+    // Compiler output is already ordered. Keep the common path linear, while
+    // accepting unsorted input from direct public callers.
+    let ordered = entities;
+    for (let i = 1; i < entities.length; i++) {
+        const previous = entities[i - 1];
+        const current = entities[i];
+        if (
+            current.offset < previous.offset ||
+            (current.offset === previous.offset && current.length > previous.length)
+        ) {
+            ordered = entities
+                .map((entity, index) => ({ entity, index }))
+                .sort(
+                    (a, b) =>
+                        a.entity.offset - b.entity.offset ||
+                        b.entity.length - a.entity.length ||
+                        a.index - b.index,
+                )
+                .map(({ entity }) => entity);
+            break;
+        }
+    }
+
+    for (let i = 0; i < ordered.length; i++) {
+        const a = ordered[i];
         const aEnd = a.offset + a.length;
 
-        for (let j = i + 1; j < entities.length; j++) {
-            const b = entities[j];
+        for (let j = i + 1; j < ordered.length; j++) {
+            const b = ordered[j];
             const bEnd = b.offset + b.length;
 
             if (b.offset >= aEnd) {
-                // b starts after a ends -> disjoint
-                continue;
+                // Input is ordered by offset, so every later entity is disjoint too.
+                break;
             }
 
             // b starts inside a (b.offset < aEnd).
@@ -413,7 +436,7 @@ export const compileToEntities = (tree: NativeChildren): RenderResult => {
                         if (/^tg:\/\/user\?id=/i.test(href)) {
                             const userIdStr = href.slice('tg://user?id='.length);
                             const userId = Number(userIdStr);
-                            if (!Number.isInteger(userId) || userId <= 0) {
+                            if (!Number.isSafeInteger(userId) || userId <= 0) {
                                 throw new Error(
                                     `[Telegram Markup] Invalid user ID in mention link: "${href}". User ID must be a positive integer.`,
                                 );
@@ -447,7 +470,7 @@ export const compileToEntities = (tree: NativeChildren): RenderResult => {
                             throw new Error('[Telegram Markup] <user> requires a valid "id" prop.');
                         }
                         const userId = Number(rawId);
-                        if (!Number.isInteger(userId) || userId <= 0) {
+                        if (!Number.isSafeInteger(userId) || userId <= 0) {
                             throw new Error(
                                 `[Telegram Markup] Invalid user ID: "${rawId}". Telegram user ID must be a positive integer.`,
                             );
