@@ -160,6 +160,79 @@ describe('Telegram Nesting Validation (Runtime)', () => {
         expect(() => render(userInsideUser)).toThrow(TelegramNestingError);
     });
 
+    test('throws TelegramNestingError when nesting Time inside Link or User for both render and renderToString', () => {
+        const linkWithTime = (
+            <Link href="https://example.com">
+                {
+                    (
+                        <Time unix={1718000000} format="r">
+                            in 5 minutes
+                        </Time>
+                    ) as any
+                }
+            </Link>
+        );
+
+        expect(() => renderToString(linkWithTime)).toThrow(TelegramNestingError);
+        expect(() => render(linkWithTime)).toThrow(TelegramNestingError);
+
+        try {
+            render(linkWithTime);
+        } catch (err: any) {
+            expect(err).toBeInstanceOf(TelegramNestingError);
+            expect(err.parentTag).toBe('a');
+            expect(err.childTag).toBe('tg-time');
+            expect(err.path).toBe('a > tg-time');
+        }
+
+        // Indirect nesting: Link > Bold > Time
+        const indirectLinkTime = (
+            <Link href="https://example.com">
+                <Bold>
+                    {
+                        (
+                            <Time unix={1718000000} format="r">
+                                soon
+                            </Time>
+                        ) as any
+                    }
+                </Bold>
+            </Link>
+        );
+        expect(() => renderToString(indirectLinkTime)).toThrow(TelegramNestingError);
+        expect(() => render(indirectLinkTime)).toThrow(TelegramNestingError);
+
+        // User mention containing Time
+        const userWithTime = (
+            <User id={2202303388}>
+                {
+                    (
+                        <Time unix={1718000000} format="r">
+                            now
+                        </Time>
+                    ) as any
+                }
+            </User>
+        );
+        expect(() => renderToString(userWithTime)).toThrow(TelegramNestingError);
+        expect(() => render(userWithTime)).toThrow(TelegramNestingError);
+    });
+
+    test('throws TelegramNestingError for incompatible entity children inside Link (Code, Pre, Blockquote, Emoji)', () => {
+        const forbiddenInsideLink = [
+            <Code>const x = 1;</Code>,
+            <Pre>code block</Pre>,
+            <Blockquote>quote</Blockquote>,
+            <Emoji id="12345">👍</Emoji>,
+        ];
+
+        for (const child of forbiddenInsideLink) {
+            const tree = <Link href="https://example.com">{child as any}</Link>;
+            expect(() => renderToString(tree)).toThrow(TelegramNestingError);
+            expect(() => render(tree)).toThrow(TelegramNestingError);
+        }
+    });
+
     test('throws TelegramNestingError for every forbidden child inside inline Code', () => {
         const forbiddenInsideCode = [
             <Bold>bold</Bold>,

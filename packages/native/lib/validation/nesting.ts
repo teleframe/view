@@ -69,10 +69,10 @@ export const resolveTagIdentifier = (type: unknown): string => {
  * Validates the Telegram JSX tree against Telegram Bot API formatting rules.
  *
  * Rules enforced:
- * - Blockquote cannot be nested inside another Blockquote.
+ * - Blockquote cannot be nested inside another Blockquote or inside links.
  * - Code (inline monospace) cannot contain any other formatting tags or elements.
  * - Pre (code block) can only contain text or an optional <code> tag with language.
- * - Links (<a>, <Link>, <User>) cannot be nested inside another link.
+ * - Links (<a>, <Link>, <User>) cannot be nested inside another link and cannot contain date/time, code/pre, blockquote, or custom emoji.
  * - Custom Emoji (<tg-emoji>, <Emoji>) cannot contain nested formatting tags.
  * - Formatted Time (<tg-time>, <Time>) cannot contain nested formatting tags.
  */
@@ -141,14 +141,49 @@ export const validateNesting = (node: unknown, context: NestingContext = { path:
             );
         }
 
-        // 4. Rule: Links cannot be nested inside another Link
-        if (isLink && context.insideLink) {
-            throw new TelegramNestingError(
-                `Telegram Bot API violation: Cannot nest <${rawTag}> inside a link at path "${pathStr}". Links cannot be nested.`,
-                'a',
-                rawTag,
-                pathStr,
-            );
+        // 4. Rule: Inside links (<a>, <Link>, <User>), only plain text and nested formatting elements (b, i, u, s, spoiler) are permitted.
+        // Nested links, date/time, code/pre, blockquote, and custom emoji are forbidden by Telegram Bot API.
+        if (context.insideLink) {
+            if (isLink) {
+                throw new TelegramNestingError(
+                    `Telegram Bot API violation: Cannot nest <${rawTag}> inside a link at path "${pathStr}". Links cannot be nested.`,
+                    'a',
+                    rawTag,
+                    pathStr,
+                );
+            }
+            if (isTime) {
+                throw new TelegramNestingError(
+                    `Telegram Bot API violation: Cannot nest <${rawTag}> inside a link at path "${pathStr}". Formatted date/time cannot be nested inside links.`,
+                    'a',
+                    rawTag,
+                    pathStr,
+                );
+            }
+            if (isCode || isPre) {
+                throw new TelegramNestingError(
+                    `Telegram Bot API violation: Cannot nest <${rawTag}> inside a link at path "${pathStr}". Preformatted code cannot be nested inside links.`,
+                    'a',
+                    rawTag,
+                    pathStr,
+                );
+            }
+            if (isBlockquote) {
+                throw new TelegramNestingError(
+                    `Telegram Bot API violation: Cannot nest <${rawTag}> inside a link at path "${pathStr}". Block quotations cannot be nested inside links.`,
+                    'a',
+                    rawTag,
+                    pathStr,
+                );
+            }
+            if (isEmoji) {
+                throw new TelegramNestingError(
+                    `Telegram Bot API violation: Cannot nest <${rawTag}> inside a link at path "${pathStr}". Custom emoji cannot be nested inside links.`,
+                    'a',
+                    rawTag,
+                    pathStr,
+                );
+            }
         }
 
         // 5. Rule: Custom Emoji cannot contain nested tags
