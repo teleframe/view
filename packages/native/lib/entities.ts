@@ -173,9 +173,9 @@ export const compileToEntities = (tree: NativeChildren): RenderResult => {
     validateNesting(resolved);
 
     let text = '';
-    const rawEntities: MessageEntity[] = [];
+    const rawEntities: Array<{ entity: MessageEntity; depth: number }> = [];
 
-    const traverse = (node: unknown): void => {
+    const traverse = (node: unknown, depth: number = 0): void => {
         if (node === null || node === undefined || typeof node === 'boolean') {
             return;
         }
@@ -192,7 +192,7 @@ export const compileToEntities = (tree: NativeChildren): RenderResult => {
 
         if (Array.isArray(node)) {
             for (const child of node) {
-                traverse(child);
+                traverse(child, depth);
             }
             return;
         }
@@ -206,7 +206,7 @@ export const compileToEntities = (tree: NativeChildren): RenderResult => {
             // Function component
             if (typeof element.type === 'function') {
                 const evaluated = (element.type as (p: unknown) => unknown)(element.props ?? {});
-                traverse(evaluated);
+                traverse(evaluated, depth);
                 return;
             }
 
@@ -245,7 +245,7 @@ export const compileToEntities = (tree: NativeChildren): RenderResult => {
                     const indent = Math.max(0, (props.indent ?? 0) as number);
                     const indentStr = '  '.repeat(indent);
                     text += `${indentStr}${marker}`;
-                    traverse(props.children);
+                    traverse(props.children, depth);
                     text += '\n';
                     return;
                 }
@@ -258,7 +258,7 @@ export const compileToEntities = (tree: NativeChildren): RenderResult => {
                         (props.after ?? props.spacing ?? props.lines ?? props.count ?? 2) as number,
                     );
                     text += '\n'.repeat(beforeCount);
-                    traverse(props.children);
+                    traverse(props.children, depth);
                     text += '\n'.repeat(afterCount);
                     return;
                 }
@@ -292,7 +292,7 @@ export const compileToEntities = (tree: NativeChildren): RenderResult => {
                     }
 
                     const preStartOffset = text.length;
-                    traverse(preChildren);
+                    traverse(preChildren, depth + 1);
                     const preEndOffset = text.length;
                     const preLength = preEndOffset - preStartOffset;
 
@@ -305,15 +305,15 @@ export const compileToEntities = (tree: NativeChildren): RenderResult => {
                         if (typeof language === 'string' && language.length > 0) {
                             preEntity.language = language;
                         }
-                        rawEntities.push(preEntity);
+                        rawEntities.push({ entity: preEntity, depth });
                     }
                     return;
                 }
 
                 const startOffset = text.length;
 
-                // Traverse inner children
-                traverse(props.children);
+                // Traverse inner children with depth + 1
+                traverse(props.children, depth + 1);
 
                 const endOffset = text.length;
                 const length = endOffset - startOffset;
@@ -327,33 +327,51 @@ export const compileToEntities = (tree: NativeChildren): RenderResult => {
                 switch (tag) {
                     case 'b':
                     case 'strong':
-                        rawEntities.push({ type: 'bold', offset: startOffset, length });
+                        rawEntities.push({
+                            entity: { type: 'bold', offset: startOffset, length },
+                            depth,
+                        });
                         break;
 
                     case 'i':
                     case 'em':
-                        rawEntities.push({ type: 'italic', offset: startOffset, length });
+                        rawEntities.push({
+                            entity: { type: 'italic', offset: startOffset, length },
+                            depth,
+                        });
                         break;
 
                     case 'u':
                     case 'ins':
-                        rawEntities.push({ type: 'underline', offset: startOffset, length });
+                        rawEntities.push({
+                            entity: { type: 'underline', offset: startOffset, length },
+                            depth,
+                        });
                         break;
 
                     case 's':
                     case 'strike':
                     case 'del':
-                        rawEntities.push({ type: 'strikethrough', offset: startOffset, length });
+                        rawEntities.push({
+                            entity: { type: 'strikethrough', offset: startOffset, length },
+                            depth,
+                        });
                         break;
 
                     case 'tg-spoiler':
-                        rawEntities.push({ type: 'spoiler', offset: startOffset, length });
+                        rawEntities.push({
+                            entity: { type: 'spoiler', offset: startOffset, length },
+                            depth,
+                        });
                         break;
 
                     case 'span': {
                         const cls = props.class ?? props.className;
                         if (cls === 'tg-spoiler') {
-                            rawEntities.push({ type: 'spoiler', offset: startOffset, length });
+                            rawEntities.push({
+                                entity: { type: 'spoiler', offset: startOffset, length },
+                                depth,
+                            });
                         }
                         break;
                     }
@@ -361,16 +379,22 @@ export const compileToEntities = (tree: NativeChildren): RenderResult => {
                     case 'blockquote': {
                         const isExpandable = props.expandable === true;
                         rawEntities.push({
-                            type: isExpandable ? 'expandable_blockquote' : 'blockquote',
-                            offset: startOffset,
-                            length,
+                            entity: {
+                                type: isExpandable ? 'expandable_blockquote' : 'blockquote',
+                                offset: startOffset,
+                                length,
+                            },
+                            depth,
                         });
                         break;
                     }
 
                     case 'code':
                     case 'mono':
-                        rawEntities.push({ type: 'code', offset: startOffset, length });
+                        rawEntities.push({
+                            entity: { type: 'code', offset: startOffset, length },
+                            depth,
+                        });
                         break;
 
                     case 'a': {
@@ -395,17 +419,23 @@ export const compileToEntities = (tree: NativeChildren): RenderResult => {
                                 );
                             }
                             rawEntities.push({
-                                type: 'text_mention',
-                                offset: startOffset,
-                                length,
-                                user: { id: userId },
+                                entity: {
+                                    type: 'text_mention',
+                                    offset: startOffset,
+                                    length,
+                                    user: { id: userId },
+                                },
+                                depth,
                             });
                         } else {
                             rawEntities.push({
-                                type: 'text_link',
-                                offset: startOffset,
-                                length,
-                                url: href,
+                                entity: {
+                                    type: 'text_link',
+                                    offset: startOffset,
+                                    length,
+                                    url: href,
+                                },
+                                depth,
                             });
                         }
                         break;
@@ -423,10 +453,13 @@ export const compileToEntities = (tree: NativeChildren): RenderResult => {
                             );
                         }
                         rawEntities.push({
-                            type: 'text_mention',
-                            offset: startOffset,
-                            length,
-                            user: { id: userId },
+                            entity: {
+                                type: 'text_mention',
+                                offset: startOffset,
+                                length,
+                                user: { id: userId },
+                            },
+                            depth,
                         });
                         break;
                     }
@@ -445,10 +478,13 @@ export const compileToEntities = (tree: NativeChildren): RenderResult => {
                             );
                         }
                         rawEntities.push({
-                            type: 'custom_emoji',
-                            offset: startOffset,
-                            length,
-                            custom_emoji_id: emojiId,
+                            entity: {
+                                type: 'custom_emoji',
+                                offset: startOffset,
+                                length,
+                                custom_emoji_id: emojiId,
+                            },
+                            depth,
                         });
                         break;
                     }
@@ -463,7 +499,7 @@ export const compileToEntities = (tree: NativeChildren): RenderResult => {
                             unix_time: unixTime,
                             date_time_format: format ?? '',
                         };
-                        rawEntities.push(timeEntity);
+                        rawEntities.push({ entity: timeEntity, depth });
                         break;
                     }
 
@@ -474,21 +510,29 @@ export const compileToEntities = (tree: NativeChildren): RenderResult => {
         }
     };
 
-    traverse(resolved);
+    traverse(resolved, 0);
 
-    // 2. Sort entities: offset ascending, then length descending (outer elements first)
+    // 2. Sort entities:
+    // - offset ascending (earlier in message text first)
+    // - length descending (longer / outer span first)
+    // - depth ascending (outer ancestor first when spans are identical)
     rawEntities.sort((a, b) => {
-        if (a.offset !== b.offset) {
-            return a.offset - b.offset;
+        if (a.entity.offset !== b.entity.offset) {
+            return a.entity.offset - b.entity.offset;
         }
-        return b.length - a.length;
+        if (b.entity.length !== a.entity.length) {
+            return b.entity.length - a.entity.length;
+        }
+        return a.depth - b.depth;
     });
 
+    const entities: MessageEntity[] = rawEntities.map((item) => item.entity);
+
     // 3. Validate entity range nesting and non-intersection
-    validateEntitiesOverlap(rawEntities);
+    validateEntitiesOverlap(entities);
 
     return {
         text,
-        entities: rawEntities,
+        entities,
     };
 };
