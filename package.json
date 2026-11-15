@@ -65,8 +65,10 @@
         "fnox": "bun scripts/fnox.ts",
         "example": "fnox exec -- bun --watch example/src/index.ts",
         "example:native": "fnox exec -- bun --watch example/src/index.ts",
+        "benchmark": "bun example/src/benchmark.tsx",
         "smoke:test": "fnox exec -- bun example/src/smoke-test.tsx",
-        "stress:test": "fnox exec -- bun example/src/stress-and-benchmark.tsx",
+        "live:test": "fnox exec -- bun example/src/live-test.tsx",
+        "stress:test": "fnox exec -- bun example/src/live-test.tsx",
         "verify:release": "bun scripts/verify-release.ts"
     },
     "repository": {

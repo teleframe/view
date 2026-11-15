@@ -153,41 +153,50 @@ export const validateEntitiesOverlap = (entities: MessageEntity[]): void => {
         }
     }
 
+    // Maintain an active ancestor stack representing the currently open entity hierarchy.
+    // In valid Telegram formatting, entities are strictly nested or disjoint (parentheses tree).
+    // An active ancestor stack provides strictly linear O(N) verification instead of quadratic O(N^2).
+    const stack: { entity: MessageEntity; end: number }[] = [];
+
     for (let i = 0; i < ordered.length; i++) {
-        const a = ordered[i];
-        const aEnd = a.offset + a.length;
+        const current = ordered[i];
+        const currentEnd = current.offset + current.length;
 
-        for (let j = i + 1; j < ordered.length; j++) {
-            const b = ordered[j];
-            const bEnd = b.offset + b.length;
+        // Pop all ancestors that closed at or before the start of the current entity.
+        while (stack.length > 0 && stack[stack.length - 1].end <= current.offset) {
+            stack.pop();
+        }
 
-            if (b.offset >= aEnd) {
-                // Input is ordered by offset, so every later entity is disjoint too.
-                break;
-            }
+        if (stack.length > 0) {
+            const top = stack[stack.length - 1];
 
-            // b starts inside a (b.offset < aEnd).
-            // For valid nesting, b must also end within a (bEnd <= aEnd).
-            if (bEnd > aEnd) {
+            // 1. Boundary check: current entity starts inside top (current.offset < top.end).
+            // To be strictly nested, it MUST also end within top (currentEnd <= top.end).
+            // If currentEnd > top.end, they intersect partially, violating Telegram formatting rules.
+            if (currentEnd > top.end) {
                 throw new TelegramNestingError(
-                    `Telegram Bot API boundary violation: Entities of type "${a.type}" [${a.offset}..${aEnd}] and "${b.type}" [${b.offset}..${bEnd}] intersect invalidly. In Telegram Bot API, entities must be strictly nested or disjoint.`,
-                    a.type,
-                    b.type,
-                    `${a.type} & ${b.type}`,
+                    `Telegram Bot API boundary violation: Entities of type "${top.entity.type}" [${top.entity.offset}..${top.end}] and "${current.type}" [${current.offset}..${currentEnd}] intersect invalidly. In Telegram Bot API, entities must be strictly nested or disjoint.`,
+                    top.entity.type,
+                    current.type,
+                    `${top.entity.type} & ${current.type}`,
                 );
             }
 
-            // In Telegram Bot API, when b is contained within a (or identical ranges),
-            // verify their type compatibility.
-            if (!isEntityNestingAllowed(a.type, b.type)) {
-                throw new TelegramNestingError(
-                    `Telegram Bot API nesting violation: Entity of type "${b.type}" [${b.offset}..${bEnd}] cannot be nested inside entity of type "${a.type}" [${a.offset}..${aEnd}]. Per Telegram Bot API formatting rules, this combination is incompatible.`,
-                    a.type,
-                    b.type,
-                    `${a.type} > ${b.type}`,
-                );
+            // 2. Compatibility check: verify compatibility against all enclosing active ancestors.
+            for (let s = stack.length - 1; s >= 0; s--) {
+                const ancestor = stack[s];
+                if (!isEntityNestingAllowed(ancestor.entity.type, current.type)) {
+                    throw new TelegramNestingError(
+                        `Telegram Bot API nesting violation: Entity of type "${current.type}" [${current.offset}..${currentEnd}] cannot be nested inside entity of type "${ancestor.entity.type}" [${ancestor.entity.offset}..${ancestor.end}]. Per Telegram Bot API formatting rules, this combination is incompatible.`,
+                        ancestor.entity.type,
+                        current.type,
+                        `${ancestor.entity.type} > ${current.type}`,
+                    );
+                }
             }
         }
+
+        stack.push({ entity: current, end: currentEnd });
     }
 };
 
