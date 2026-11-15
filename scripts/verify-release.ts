@@ -136,6 +136,11 @@ if (typeof jsx !== "function") throw new Error("jsx runtime export missing");
         await $`deno test tests/deno.test.tsx`.quiet();
     });
 
+    // 7. Verify JSR publication readiness (deno publish --dry-run)
+    await runStep('Verifying JSR dry-run publication (deno publish --dry-run)', async () => {
+        await $`deno publish --dry-run --allow-dirty`.quiet();
+    });
+
     console.log('\n===========================================');
     console.log('✨ ALL RELEASE CHECKS PASSED SUCCESSFULLY!');
     console.log('===========================================\n');

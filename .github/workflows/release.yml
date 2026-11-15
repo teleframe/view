@@ -107,31 +107,30 @@ jobs:
 
             # 1. Publish to NPM
             - name: Publish to NPM
-              if: ${{ !inputs.dry_run }}
               run: |
                   PKG_VERSION=$(node -p "require('./package.json').version")
+                  DRY_RUN_FLAG=""
+                  if [ "${{ inputs.dry_run }}" = "true" ]; then
+                    DRY_RUN_FLAG="--dry-run"
+                    echo "Performing dry run publish for NPM..."
+                  fi
                   if npm view "@teleframe/view@$PKG_VERSION" version >/dev/null 2>&1; then
                     echo "Version $PKG_VERSION is already published to NPM. Skipping."
                   else
-                    npm publish --provenance --access public
+                    npm publish $DRY_RUN_FLAG --provenance --access public
                   fi
-              env:
-                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-            - name: Publish to NPM (Dry Run)
-              if: ${{ inputs.dry_run }}
-              run: npm publish --dry-run --provenance --access public
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
             # 2. Publish to JSR
             - name: Publish to JSR
-              if: ${{ !inputs.dry_run }}
-              run: deno publish
-
-            - name: Publish to JSR (Dry Run)
-              if: ${{ inputs.dry_run }}
-              run: deno publish --dry-run
+              run: |
+                  if [ "${{ inputs.dry_run }}" = "true" ]; then
+                    echo "Performing dry run publish for JSR..."
+                    deno publish --dry-run
+                  else
+                    deno publish
+                  fi
 
             # 3. Create Fallback GitHub Release (only for manual tag push without Release Please)
             - name: Create Fallback GitHub Release
