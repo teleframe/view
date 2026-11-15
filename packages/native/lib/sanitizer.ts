@@ -90,31 +90,63 @@ export const filterTelegramAttributes = (
     switch (tagName) {
         case 'a': {
             const href = props.href;
-            if (typeof href === 'string') {
-                if (!isValidUrl(href)) {
+            if (typeof href !== 'string' || href.trim() === '') {
+                throw new Error(
+                    '[Telegram Markup] Invalid attribute: <a> tag requires a non-empty "href" attribute.',
+                );
+            }
+            if (!isValidUrl(href)) {
+                throw new Error(
+                    `[Telegram Markup] Security Error: Invalid or prohibited URL in <a href="${href}">. Only http, https, tg, mailto, and tel schemes are allowed.`,
+                );
+            }
+            if (/^tg:\/\/user\?id=/i.test(href)) {
+                const userIdStr = href.slice('tg://user?id='.length);
+                const userId = Number(userIdStr);
+                if (!Number.isInteger(userId) || userId <= 0) {
                     throw new Error(
-                        `[Telegram Markup] Security Error: Invalid or prohibited URL in <a href="${href}">. Only http, https, tg, mailto, and tel schemes are allowed.`,
+                        `[Telegram Markup] Invalid user ID in mention link: "${href}". User ID must be a positive integer.`,
                     );
                 }
-                validAttrs.href = href;
             }
+            validAttrs.href = href;
             break;
         }
 
         case 'tg-emoji': {
-            const emojiId = props['emoji-id'] ?? props.emojiId;
-            if (emojiId !== undefined && emojiId !== null) {
-                validAttrs['emoji-id'] = String(emojiId);
+            const emojiId = props['emoji-id'] ?? props.emojiId ?? (props as any).id;
+            if (emojiId === undefined || emojiId === null || String(emojiId).trim() === '') {
+                throw new Error(
+                    '[Telegram Markup] Invalid attribute: <tg-emoji> requires a non-empty "emoji-id" attribute.',
+                );
             }
+            const strId = String(emojiId).trim();
+            if (!/^\d+$/.test(strId)) {
+                throw new Error(
+                    `[Telegram Markup] Invalid emoji-id: "${emojiId}". Telegram custom emoji ID must be a numeric string of digits.`,
+                );
+            }
+            validAttrs['emoji-id'] = strId;
             break;
         }
 
         case 'tg-time': {
-            if (props.unix !== undefined && props.unix !== null) {
-                validAttrs.unix = String(props.unix);
+            if (
+                props.unix === undefined ||
+                props.unix === null ||
+                String(props.unix).trim() === ''
+            ) {
+                throw new Error(
+                    '[Telegram Markup] Invalid attribute: <tg-time> requires a valid "unix" attribute.',
+                );
             }
-            if (props.format !== undefined && props.format !== null) {
-                validAttrs.format = String(props.format);
+            validAttrs.unix = String(props.unix);
+            if (
+                props.format !== undefined &&
+                props.format !== null &&
+                String(props.format).trim() !== ''
+            ) {
+                validAttrs.format = String(props.format).trim();
             }
             break;
         }

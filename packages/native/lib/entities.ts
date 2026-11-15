@@ -7,6 +7,7 @@ import { RAW_HTML_TYPE } from './components/raw-html';
 import { isValidUrl } from './sanitizer';
 import type { NativeChildren } from './tags/base';
 import { normalizeTimeFormat, normalizeTimestamp } from './tags/time';
+import { resolveTree } from './tree';
 import { validateNesting } from './validation/nesting';
 
 export interface BaseMessageEntity {
@@ -115,8 +116,11 @@ export const validateEntitiesOverlap = (entities: MessageEntity[]): void => {
  * Compiles a Telegram JSX tree into text and MessageEntity array in a single pass.
  */
 export const compileToEntities = (tree: NativeChildren): RenderResult => {
-    // 1. Validate tree nesting before compilation
-    validateNesting(tree);
+    // 1. Recursively resolve components and callbacks exactly once
+    const resolved = resolveTree(tree);
+
+    // 2. Validate tree nesting before compilation
+    validateNesting(resolved);
 
     let text = '';
     const rawEntities: MessageEntity[] = [];
@@ -320,7 +324,12 @@ export const compileToEntities = (tree: NativeChildren): RenderResult => {
                         break;
 
                     case 'a': {
-                        const href = String(props.href ?? '');
+                        const href = typeof props.href === 'string' ? props.href.trim() : '';
+                        if (!href) {
+                            throw new Error(
+                                '[Telegram Markup] Invalid attribute: <a> tag requires a non-empty "href" attribute.',
+                            );
+                        }
                         if (!isValidUrl(href)) {
                             throw new Error(
                                 `[Telegram Markup] Security Error: Invalid or prohibited URL in <a href="${href}">. Only http, https, tg, mailto, and tel schemes are allowed.`,
@@ -330,6 +339,11 @@ export const compileToEntities = (tree: NativeChildren): RenderResult => {
                         if (/^tg:\/\/user\?id=/i.test(href)) {
                             const userIdStr = href.slice('tg://user?id='.length);
                             const userId = Number(userIdStr);
+                            if (!Number.isInteger(userId) || userId <= 0) {
+                                throw new Error(
+                                    `[Telegram Markup] Invalid user ID in mention link: "${href}". User ID must be a positive integer.`,
+                                );
+                            }
                             rawEntities.push({
                                 type: 'text_mention',
                                 offset: startOffset,
@@ -348,7 +362,16 @@ export const compileToEntities = (tree: NativeChildren): RenderResult => {
                     }
 
                     case 'user': {
-                        const userId = Number(props.id);
+                        const rawId = props.id;
+                        if (rawId === undefined || rawId === null || String(rawId).trim() === '') {
+                            throw new Error('[Telegram Markup] <user> requires a valid "id" prop.');
+                        }
+                        const userId = Number(rawId);
+                        if (!Number.isInteger(userId) || userId <= 0) {
+                            throw new Error(
+                                `[Telegram Markup] Invalid user ID: "${rawId}". Telegram user ID must be a positive integer.`,
+                            );
+                        }
                         rawEntities.push({
                             type: 'text_mention',
                             offset: startOffset,
@@ -359,7 +382,18 @@ export const compileToEntities = (tree: NativeChildren): RenderResult => {
                     }
 
                     case 'tg-emoji': {
-                        const emojiId = String(props['emoji-id'] ?? props.emojiId ?? '');
+                        const rawId = props['emoji-id'] ?? props.emojiId ?? props.id;
+                        if (rawId === undefined || rawId === null || String(rawId).trim() === '') {
+                            throw new Error(
+                                '[Telegram Markup] Invalid attribute: <tg-emoji> requires a non-empty "emoji-id" attribute.',
+                            );
+                        }
+                        const emojiId = String(rawId).trim();
+                        if (!/^\d+$/.test(emojiId)) {
+                            throw new Error(
+                                `[Telegram Markup] Invalid emoji-id: "${rawId}". Telegram custom emoji ID must be a numeric string of digits.`,
+                            );
+                        }
                         rawEntities.push({
                             type: 'custom_emoji',
                             offset: startOffset,
@@ -390,7 +424,7 @@ export const compileToEntities = (tree: NativeChildren): RenderResult => {
         }
     };
 
-    traverse(tree);
+    traverse(resolved);
 
     // 2. Sort entities: offset ascending, then length descending (outer elements first)
     rawEntities.sort((a, b) => {

@@ -19,14 +19,27 @@ export function User(
     propsOrId: NativeUserProps | number | string | bigint,
     children?: NativeChildren,
 ): TelegramNativeElement {
+    let id: unknown;
+    let c: NativeChildren | undefined;
     if (typeof propsOrId === 'object' && propsOrId !== null) {
-        return (
-            <user id={(propsOrId as NativeUserProps).id}>
-                {(propsOrId as NativeUserProps).children}
-            </user>
+        id = (propsOrId as NativeUserProps).id;
+        c = (propsOrId as NativeUserProps).children;
+    } else {
+        id = propsOrId;
+        c = children;
+    }
+
+    if (id === undefined || id === null || String(id).trim() === '') {
+        throw new Error('[Telegram Markup] <User> requires a valid "id" prop.');
+    }
+    const numId = Number(id);
+    if (!Number.isInteger(numId) || numId <= 0) {
+        throw new Error(
+            `[Telegram Markup] Invalid user ID: "${id}". Telegram user ID must be a positive integer.`,
         );
     }
-    return <user id={propsOrId}>{children}</user>;
+
+    return <a href={`tg://user?id=${numId}`}>{c}</a>;
 }
 
 /**

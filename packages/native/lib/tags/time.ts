@@ -129,7 +129,9 @@ export const normalizeTimeFormat = (format?: string): TelegramRawTimeFormat | un
  */
 export const normalizeTimestamp = (input: unknown): number => {
     if (input === null || input === undefined) {
-        return 0;
+        throw new Error(
+            '[Telegram Markup] Missing timestamp: Time component requires a Date instance or unix timestamp.',
+        );
     }
 
     let timestamp: number;

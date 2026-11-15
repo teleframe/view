@@ -17,9 +17,7 @@ interface TimeBaseProps {
 }
 
 type TimeValueProps =
-    | { date: Date; unix?: never }
-    | { unix: number | string | bigint; date?: never }
-    | { date?: never; unix?: never };
+    { date: Date; unix?: never } | { unix: number | string | bigint; date?: never };
 
 type TimeRelativeProps = {
     /** Render as relative time (e.g., "5 minutes ago") -> 'r' */

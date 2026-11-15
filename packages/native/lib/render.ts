@@ -14,6 +14,7 @@ import {
     TELEGRAM_ALLOWED_TAGS,
 } from './sanitizer';
 import type { NativeChildren, TelegramNativeElement } from './tags';
+import { resolveTree } from './tree';
 import { validateCaptionLength, validateMessageLength } from './validation/limits';
 import { validateNesting } from './validation/nesting';
 
@@ -79,8 +80,11 @@ export const renderToString = (
     node: NativeChildren | TelegramNativeElement<any> | any,
     options?: RenderToStringOptions,
 ): string => {
-    // 1. Validate tree nesting before serialization
-    validateNesting(node);
+    // 1. Recursively resolve components and callbacks exactly once
+    const resolved = resolveTree(node);
+
+    // 2. Validate tree nesting before serialization
+    validateNesting(resolved);
 
     const serialize = (child: unknown): string => {
         if (child === null || child === undefined || typeof child === 'boolean') {
@@ -189,12 +193,12 @@ export const renderToString = (
         return '';
     };
 
-    const output = serialize(node);
+    const output = serialize(resolved);
 
     if (options?.validate === 'message') {
-        validateMessageLength(output);
+        validateMessageLength(output, { isHtml: true });
     } else if (options?.validate === 'caption') {
-        validateCaptionLength(output);
+        validateCaptionLength(output, { isHtml: true });
     }
 
     return output;

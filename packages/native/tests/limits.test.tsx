@@ -81,4 +81,24 @@ describe('Telegram Limits Validation', () => {
             renderToString('<b>' + 'x'.repeat(4100) + '</b>', { validate: 'message' }),
         ).toThrow(TelegramLimitError);
     });
+
+    test('validates HTML length based on parsed text length rather than raw HTML markup length', () => {
+        // Raw HTML string length is 4090 + 7 (<b></b>) = 4097 (> 4096).
+        // But Telegram calculates text length after entity/HTML parsing, which is 4090 (<= 4096).
+        // This MUST pass without throwing!
+        const markupWithTags = <b>{'a'.repeat(4090)}</b>;
+        expect(() => renderToString(markupWithTags, { validate: 'message' })).not.toThrow();
+
+        // Caption with long URL: raw HTML is > 1050 chars, but text is only 13 chars.
+        // Telegram allows up to 1024 characters of caption text.
+        const longUrl = 'https://example.com/' + 'p'.repeat(1050);
+        const captionMarkup = <a href={longUrl}>Short caption</a>;
+        expect(() => renderToString(captionMarkup, { validate: 'caption' })).not.toThrow();
+
+        // HTML entities like &amp; should count as 1 character, not 5
+        const entitiesMarkup = <b>{'&'.repeat(4090)}</b>;
+        // Serialized HTML contains &amp; repeated 4090 times = 20,450 characters!
+        // But parsed text length is 4090 <= 4096, so it must pass!
+        expect(() => renderToString(entitiesMarkup, { validate: 'message' })).not.toThrow();
+    });
 });

@@ -29,22 +29,52 @@ export class TelegramLimitError extends Error {
     }
 }
 
+/**
+ * Strips Telegram-allowed HTML tags and decodes Telegram HTML entities.
+ * Returns the plain text representation as parsed by Telegram Bot API.
+ *
+ * In Telegram Bot API, message length (1–4096) and caption length (0–1024)
+ * are calculated based on the UTF-16 code units of text AFTER entities/HTML parsing.
+ */
+export const stripTelegramHtml = (html: string): string => {
+    return html
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<[^>]*>/g, '')
+        .replace(/&quot;/g, '"')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>');
+};
+
 const extractText = (value: string | { text: string }): string => {
     return typeof value === 'string' ? value : value.text;
 };
 
+export interface LimitValidationOptions {
+    /** Allow empty string without throwing validation error */
+    allowEmpty?: boolean;
+    /** Treat input as Telegram HTML and validate length after stripping tags & entities */
+    isHtml?: boolean;
+    /** Format mode (e.g. 'HTML') */
+    parseMode?: 'HTML' | 'entities' | 'plain';
+}
+
 /**
  * Validates text length against Telegram Bot API message limit (1–4096 UTF-16 code units).
+ * Checks length after entity/HTML parsing as enforced by Telegram Bot API.
  *
- * @param textOrResult - Raw text string or RenderResult object
- * @param options - Validation options (e.g., allowEmpty)
+ * @param textOrResult - Raw text string, HTML string, or RenderResult object
+ * @param options - Validation options (e.g., allowEmpty, isHtml)
  * @throws {TelegramLimitError} if message length violates Telegram limits
  */
 export const validateMessageLength = (
     textOrResult: string | { text: string },
-    options: { allowEmpty?: boolean } = {},
+    options: LimitValidationOptions = {},
 ): void => {
-    const text = extractText(textOrResult);
+    let text = extractText(textOrResult);
+    if (options.isHtml || options.parseMode === 'HTML') {
+        text = stripTelegramHtml(text);
+    }
     const length = text.length; // JS string.length measures UTF-16 code units
 
     if (length === 0 && !options.allowEmpty) {
@@ -69,12 +99,20 @@ export const validateMessageLength = (
 
 /**
  * Validates text length against Telegram Bot API media caption limit (0–1024 UTF-16 code units).
+ * Checks length after entity/HTML parsing as enforced by Telegram Bot API.
  *
- * @param textOrResult - Raw caption string or RenderResult object
+ * @param textOrResult - Raw caption string, HTML string, or RenderResult object
+ * @param options - Validation options (e.g., isHtml)
  * @throws {TelegramLimitError} if caption length exceeds 1024 characters
  */
-export const validateCaptionLength = (textOrResult: string | { text: string }): void => {
-    const text = extractText(textOrResult);
+export const validateCaptionLength = (
+    textOrResult: string | { text: string },
+    options: LimitValidationOptions = {},
+): void => {
+    let text = extractText(textOrResult);
+    if (options.isHtml || options.parseMode === 'HTML') {
+        text = stripTelegramHtml(text);
+    }
     const length = text.length;
 
     if (length > TELEGRAM_LIMITS.CAPTION_MAX_LENGTH) {

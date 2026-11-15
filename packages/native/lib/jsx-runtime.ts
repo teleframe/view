@@ -27,11 +27,20 @@ export const jsx = (type: any, props: any, key?: any): TelegramNativeElement => 
     // 1. Transform virtual <user id={...}> into Telegram user mention link <a href="tg://user?id=...">
     if (type === 'user') {
         const { id, children, ...rest } = props ?? {};
+        if (id === undefined || id === null || String(id).trim() === '') {
+            throw new Error('[Telegram Markup] <user> requires a valid "id" prop.');
+        }
+        const numId = Number(id);
+        if (!Number.isInteger(numId) || numId <= 0) {
+            throw new Error(
+                `[Telegram Markup] Invalid user ID: "${id}". Telegram user ID must be a positive integer.`,
+            );
+        }
         return {
             type: 'a',
             props: {
                 ...rest,
-                href: `tg://user?id=${id}`,
+                href: `tg://user?id=${numId}`,
                 children,
             },
             key,

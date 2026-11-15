@@ -35,6 +35,9 @@ export function Link(
     }
 
     if (typeof propsOrTarget === 'string') {
+        if (!propsOrTarget.trim()) {
+            throw new Error('[Telegram Markup] <Link> requires a non-empty "href" prop.');
+        }
         return <a href={propsOrTarget}>{children}</a>;
     }
 

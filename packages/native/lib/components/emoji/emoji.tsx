@@ -19,10 +19,27 @@ export function Emoji(
     propsOrId: NativeEmojiProps | string | number | bigint,
     fallback?: EmojiChildren,
 ): TelegramNativeElement {
+    let id: unknown;
+    let children: EmojiChildren | undefined;
     if (typeof propsOrId === 'object' && propsOrId !== null) {
-        return <tg-emoji emoji-id={propsOrId.id}>{propsOrId.children}</tg-emoji>;
+        id = propsOrId.id;
+        children = propsOrId.children;
+    } else {
+        id = propsOrId;
+        children = fallback;
     }
-    return <tg-emoji emoji-id={propsOrId}>{fallback}</tg-emoji>;
+
+    if (id === undefined || id === null || String(id).trim() === '') {
+        throw new Error('[Telegram Markup] <Emoji> requires a valid "id" prop.');
+    }
+    const strId = String(id).trim();
+    if (!/^\d+$/.test(strId)) {
+        throw new Error(
+            `[Telegram Markup] Invalid emoji-id: "${id}". Telegram custom emoji ID must be a numeric string of digits.`,
+        );
+    }
+
+    return <tg-emoji emoji-id={strId}>{children}</tg-emoji>;
 }
 
 /**
