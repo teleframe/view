@@ -1,30 +1,35 @@
 {
-  "compilerOptions": {
-    // Environment setup & latest features
-    "lib": ["ESNext"],
-    "target": "ESNext",
-    "module": "Preserve",
-    "moduleDetection": "force",
-    "jsx": "react-jsx",
-    "allowJs": true,
-    "types": ["bun"],
+    "$schema": "https://json.schemastore.org/tsconfig",
+    "compilerOptions": {
+        // Environment setup & latest features
+        "lib": ["ESNext"],
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "jsx": "react-jsx",
+        "jsxImportSource": "@telegram-markup/native",
+        "types": ["bun"],
+        "allowJs": true,
 
-    // Bundler mode
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
-    "noEmit": true,
+        // Monorepo workspace package aliases
+        "paths": {
+            "@telegram-markup/native": ["./packages/native/lib/index.tsx"],
+            "@telegram-markup/native/*": ["./packages/native/lib/*"],
+            "@telegram-markup/*": ["./packages/*/lib/index.tsx", "./packages/*/src/index.tsx"]
+        },
 
-    // Best practices
-    "strict": true,
-    "skipLibCheck": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true,
+        // Type checking & best practices
+        "strict": true,
+        "skipLibCheck": true,
+        "isolatedModules": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitOverride": true,
+        "noUnusedLocals": false,
+        "noUnusedParameters": false,
 
-    // Some stricter flags (disabled by default)
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noPropertyAccessFromIndexSignature": false
-  }
+        // Editor / Bun runtime dev mode
+        "noEmit": true
+    },
+    "include": ["packages/**/*", "src/**/*"],
+    "exclude": ["node_modules", "dist"]
 }
